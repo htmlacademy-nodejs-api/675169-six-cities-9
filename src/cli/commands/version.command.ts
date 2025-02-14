@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { Command } from './command.interface.js';
+import chalk from 'chalk';
 
 type PackageJSONConfig = {
   version: string;
@@ -39,7 +40,7 @@ export class VersionCommand implements Command {
   public async execute(..._parameters: string[]): Promise<void> {
     try {
       const version = this.readVersion();
-      console.info(version);
+      console.info(chalk.red(version));
     } catch (error: unknown) {
       console.error(`Failed to read version from ${this.filePath}`);
 
