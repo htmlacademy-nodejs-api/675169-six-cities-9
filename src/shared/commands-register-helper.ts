@@ -1,10 +1,9 @@
 
 import { readdir } from 'node:fs/promises';
 import { resolve, extname } from 'node:path';
-import { pathToFileURL } from 'node:url';
-import { Command } from './cli/commands/command.interface.js';
+import { Command } from '../cli/commands/command.interface.js';
 
-export class Helper {
+export class CommandsRegisterHelper {
   constructor(
     private readonly directory: string
   ) {}
@@ -14,16 +13,16 @@ export class Helper {
       const files = await readdir(this.directory);
       const commands = [];
 
+      const supportedExtensions = ['.ts', '.js'];
+
       for (const file of files) {
 
-        if ((extname(file) === '.js' || extname(file) === '.ts') && !file.split('.').includes('interface')) {
+        if ((supportedExtensions.includes(extname(file))) && !file.split('.').includes('interface')) {
           const modulePath = resolve(this.directory, file);
-          const moduleUrl = pathToFileURL(modulePath).href;
 
           // eslint-disable-next-line no-restricted-syntax, node/no-unsupported-features/es-syntax
-          const importedModule = await import(moduleUrl);
+          const importedModule = await import(modulePath);
 
-          console.log(importedModule);
           const CommandClass = Object.values(importedModule)[0] as { new (): Command };
 
           if (typeof CommandClass === 'function') {
@@ -33,8 +32,9 @@ export class Helper {
       }
 
       return commands;
-    } catch (error) {
-      console.error('error');
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(`error: ${error.message}`);
       return [];
     }
   }
