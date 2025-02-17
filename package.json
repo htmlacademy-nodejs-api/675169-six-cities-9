@@ -14,7 +14,10 @@
     "lint": "eslint src/ --ext .ts",
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "ts": "tsc --noEmit && node --no-warnings=--no-warnings=ExperimentalWarning --loader ts-node/esm"
+    "ts": "tsc --noEmit && node --no-warnings=--no-warnings=ExperimentalWarning --loader ts-node/esm",
+    "cli:version": "npm run ts ./src/main.cli.ts -- --version ",
+    "cli:help": "npm run ts ./src/main.cli.ts -- --help",
+    "cli:import": "npm run ts ./src/main.cli.ts -- --import ./mocks/mocks.tsv"
   },
   "devDependencies": {
     "@types/node": "20.12.7",
@@ -30,5 +33,8 @@
   "engines": {
     "node": "^22",
     "npm": "^10"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
   }
 }
