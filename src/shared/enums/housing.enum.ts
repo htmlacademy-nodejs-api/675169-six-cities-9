@@ -1,6 +1,6 @@
 export enum HousingEnum {
-  Apartment = 'apartment',
-  House = 'house',
-  Room = 'room',
-  Hotel = 'hotel'
+  Apartment = 'Apartment',
+  House = 'House',
+  Room = 'Room',
+  Hotel = 'Hotel'
 }

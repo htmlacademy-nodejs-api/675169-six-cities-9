@@ -7,16 +7,16 @@ export class CLIApplication {
   private commands: CommandCollection = {};
 
   constructor(
-    private readonly defaultCommand: string = '--help'
+    private readonly defaultCommand = '--help'
   ) {}
 
 
   public registerCommands(commandList: Command[]): void {
     commandList.forEach((command) => {
-      if (Object.hasOwn(this.commands, command.getName())) {
-        throw new Error(`Command ${command.getName()} is already registered`);
+      if (this.commands[command.name]) {
+        throw new Error(`Command ${command.name} is already registered`);
       }
-      this.commands[command.getName()] = command;
+      this.commands[command.name] = command;
     });
   }
 

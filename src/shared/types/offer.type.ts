@@ -9,14 +9,12 @@ export type Offer = {
   preview: Image;
   images: Image[];
   premium: boolean;
-  favorite: boolean;
   rating: number;
   housingType: HousingEnum,
   roomsNumber: number;
   guestsNumber: number;
   rentPrice: number;
   comforts: ComfortList;
-  author: string;
   coordinate: Coordinate;
-  user: User
+  author: User
 }

@@ -4,6 +4,7 @@ import { FileReader } from './file-reader.interface.js';
 import { Offer } from '../types/offer.type.js';
 import { CityEnum, HousingEnum } from '../enums/index.js';
 import { ComfortList, ComfortType, Coordinate, Image, User } from '../types/index.js';
+import { SEMICOLON } from '../constants/index.js';
 
 
 export class TSVFileReader implements FileReader {
@@ -35,14 +36,12 @@ export class TSVFileReader implements FileReader {
       preview,
       images,
       premium,
-      favorite,
       rating,
       housingType,
       roomsNumber,
       guestsNumber,
       rentPrice,
       comforts,
-      author,
       coordinate,
       user,
     ] = line.split('\t');
@@ -51,53 +50,51 @@ export class TSVFileReader implements FileReader {
       title,
       description,
       postDate: new Date(postDate),
-      city: CityEnum[city as CityEnum],
+      city: city as CityEnum,
       preview: { image: preview},
       images: this.parseImages(images),
-      premium: this.parseBooleen(premium),
-      favorite: this.parseBooleen(favorite),
+      premium: this.parseBoolean(premium),
       rating: Number(parseFloat(rating).toFixed(1)),
       housingType: housingType as HousingEnum,
       roomsNumber: Number(roomsNumber),
       guestsNumber: Number(guestsNumber),
       rentPrice: Number(rentPrice),
       comforts: this.parseComforts(comforts),
-      author,
       coordinate: this.parseCoordintates(coordinate),
-      user: this.parseUser(user)
+      author: this.parseUser(user)
     };
   }
 
   private parseImages(imagesString: string): Image[] {
-    return imagesString.split(';').map((image) => ({ image }));
+    return imagesString.split(SEMICOLON).map((image) => ({ image }));
   }
 
-  private parseBooleen(booleanSting: string): boolean {
-    return booleanSting === 'true';
+  private parseBoolean(booleanSting: string): boolean {
+    return booleanSting.toLowerCase() === 'true';
   }
 
   private parseComforts(comfortsString: string): ComfortList {
-    const items = comfortsString.split(';').map((item) => item.trim());
+    const items = comfortsString.split(SEMICOLON).map((item) => item.trim());
 
     const validItems: ComfortType[] = items as ComfortType[];
     return validItems as unknown as ComfortList;
   }
 
   private parseCoordintates(coordintatesString: string): Coordinate {
-    const [latitude, longitude] = coordintatesString.split(';');
+    const [latitude, longitude] = coordintatesString.split(SEMICOLON);
     const result = {latitude: Number(latitude), longitude: Number(longitude)};
     return result;
   }
 
   private parseUser(userString: string): User {
-    const [name, email, image, password, pro] = userString.split(';');
+    const [name, email, image, password, pro] = userString.split(SEMICOLON);
 
     return {
       name,
       email,
       image: { image },
       password,
-      pro: pro === 'true'
+      pro: this.parseBoolean(pro)
     };
   }
 
