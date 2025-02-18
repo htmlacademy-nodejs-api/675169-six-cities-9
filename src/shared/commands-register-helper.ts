@@ -2,6 +2,7 @@
 import { readdir } from 'node:fs/promises';
 import { resolve, extname } from 'node:path';
 import { Command } from '../cli/commands/command.interface.js';
+import { getErrorMessage } from './helpers/common.js';
 
 export class CommandsRegisterHelper {
   constructor(
@@ -32,9 +33,8 @@ export class CommandsRegisterHelper {
       }
 
       return commands;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error(`error: ${error.message}`);
+    } catch (error: unknown) {
+      console.error(getErrorMessage(error));
       return [];
     }
   }
