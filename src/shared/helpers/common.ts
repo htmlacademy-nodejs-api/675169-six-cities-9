@@ -1,5 +1,7 @@
-export function generateRandomValue(min:number, max: number, numAfterDigit = 0) {
-  return +((Math.random() * (max - min)) + min).toFixed(numAfterDigit);
+import { DECIMAL_PLACES_ZERO, PASSWORD_MAX_NUMBER, PASSWORD_MIN_NUMBER } from '../constants/index.js';
+
+export function generateRandomValue(min:number, max: number, numAfterDigit = DECIMAL_PLACES_ZERO) {
+  return Number(((Math.random() * (max - min)) + min).toFixed(numAfterDigit));
 }
 
 export function getRandomItems<T>(items: T[]):T[] {
@@ -17,7 +19,7 @@ export function getRandomBoolean(): boolean {
 }
 
 export function getRandomPassword(): string {
-  const randomPasswordLength = generateRandomValue(6,12);
+  const randomPasswordLength = generateRandomValue(PASSWORD_MIN_NUMBER,PASSWORD_MAX_NUMBER);
 
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
   let password = '';
@@ -30,5 +32,5 @@ export function getRandomPassword(): string {
 }
 
 export function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : '';
+  return error instanceof Error ? error.message : 'UNKNOWN ERROR';
 }

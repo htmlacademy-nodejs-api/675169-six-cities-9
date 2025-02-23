@@ -7,7 +7,7 @@ import { getErrorMessage } from '../../shared/helpers/common.js';
 import chalk from 'chalk';
 
 export class GenerateCommand implements Command {
-  public name = '--generate';
+  public readonly name = '--generate';
   private initialData: MockServerData;
 
   private async load(url: string) {

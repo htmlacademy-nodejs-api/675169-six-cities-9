@@ -6,7 +6,7 @@ import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
 
 
 export class ImportCommand implements Command {
-  public name = '--import';
+  public readonly name = '--import';
 
   private onImportedOffer(offer: Offer): void {
     console.info(offer);
@@ -16,7 +16,7 @@ export class ImportCommand implements Command {
     console.info(chalk.yellow(`${count} rows imported.`));
   }
 
-  public async execute(...parameters: string[]): Promise<void> {
+  public execute(...parameters: string[]) {
     const [filename] = parameters;
     const fileReader = new TSVFileReader(filename.trim());
 

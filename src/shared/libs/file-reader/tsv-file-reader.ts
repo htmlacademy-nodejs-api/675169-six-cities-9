@@ -2,7 +2,7 @@ import EventEmitter from 'node:events';
 import { FileReader } from './file-reader.interface.js';
 import { CityEnum, HousingEnum } from '../../enums/index.js';
 import { ComfortList, ComfortType, Coordinate, Image, User } from '../../types/index.js';
-import { SEMICOLON } from '../../constants/index.js';
+import { NEWLINE, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
 import { createReadStream } from 'node:fs';
 import { Offer } from '../../types/offer.type.js';
 
@@ -32,7 +32,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       comforts,
       coordinate,
       author,
-    ] = line.split('\t');
+    ] = line.split(TAB_SPACE);
 
     return {
       title,
@@ -99,13 +99,17 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     for await (const chunk of readStream) {
       remainingData += chunk.toString();
 
-      while ((nextLinePosition = remainingData.indexOf('\n')) >= 0) {
+      nextLinePosition = remainingData.indexOf(NEWLINE);
+
+      while (nextLinePosition >= 0) {
         const completeRow = remainingData.slice(0, nextLinePosition + 1);
         remainingData = remainingData.slice(++nextLinePosition);
         importedRowCount++;
 
         const parsedOffer = this.parseLineToOffer(completeRow);
         this.emit('line', parsedOffer);
+
+        nextLinePosition = remainingData.indexOf(NEWLINE);
       }
     }
 
