@@ -1,0 +1,103 @@
+{
+  "api": {
+    "titles": [
+      "Договор аренды офисного помещения",
+      "Соглашение о долгосрочной аренде склада",
+      "Контракт на аренду жилого помещения",
+      "Договор аренды торговой площади",
+      "Соглашение об аренде земельного участка",
+      "Договор аренды автомобиля",
+      "Контракт на аренду оборудования",
+      "Соглашение о краткосрочной аренде квартиры",
+      "Договор аренды конференц-зала",
+      "Контракт на аренду строительной техники"
+    ],
+    "descriptions": [
+      "Договор на временное пользование офисом",
+      "Соглашение о предоставлении склада в аренду",
+      "Контракт на аренду квартиры для проживания",
+      "Документ об аренде торгового помещения",
+      "Соглашение о пользовании земельным участком",
+      "Договор на аренду транспортного средства",
+      "Контракт на временное использование техники",
+      "Документ о краткосрочной аренде жилья",
+      "Соглашение об аренде конференц-зала",
+      "Договор о передаче строительной техники в аренду"
+    ],
+    "cities": [
+      "Paris",
+      "Cologne",
+      "Brussels",
+      "Amsterdam",
+      "Hamburg",
+      "Dusseldorf"
+    ],
+    "previews": [
+      "book.jpg",
+      "institute-book.jpg",
+      "dark-tower.jpg",
+      "shining.jpg",
+      "draft.jpg",
+      "magic.jpg"
+    ],
+    "images": [
+      "category-book.jpg",
+      "category-disk.jpg",
+      "category-home.jpg",
+      "category-games.jpg",
+      "category-entertainment.jpg",
+      "category-films.jpg"
+    ],
+    "housingTypes": [
+      "Apartment",
+      "House",
+      "Room",
+      "Hotel"
+    ],
+    "comforts": [
+      "Breakfast",
+      "Air Conditioning",
+      "Laptop Friendly Workspace",
+      "Baby Seat",
+      "Washer",
+      "Towels",
+      "Fridge"
+    ],
+    "authorNames": [
+      "Иван Иванов",
+      "Олег Сидоров",
+      "Пьер Безухов",
+      "Роланд Дискейн",
+      "Холи Гибни",
+      "Джек Торренс",
+      "Антон Городецкий",
+      "Борис Гесер",
+      "Рокки Бальбоа",
+      "Джон Смит"
+    ],
+    "emails": [
+      "test1@example.com",
+      "user2@mail.com",
+      "dummy3@test.com",
+      "sample4@demo.net",
+      "fake5@site.org",
+      "random6@email.com",
+      "temp7@mock.com",
+      "try8@fakemail.com",
+      "check9@domain.net",
+      "dev10@placeholder.com"
+    ],
+    "avatars": [
+      "image1.png",
+      "image2.png",
+      "image3.png",
+      "image4.png",
+      "image5.png",
+      "image6.png",
+      "image7.png",
+      "image8.png",
+      "image9.png",
+      "image10.png"
+    ]
+  }
+}

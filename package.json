@@ -17,7 +17,9 @@
     "ts": "tsc --noEmit && node --no-warnings=--no-warnings=ExperimentalWarning --loader ts-node/esm",
     "cli:version": "npm run ts ./src/main.cli.ts -- --version ",
     "cli:help": "npm run ts ./src/main.cli.ts -- --help",
-    "cli:import": "npm run ts ./src/main.cli.ts -- --import ./mocks/mocks.tsv"
+    "cli:import": "npm run ts ./src/main.cli.ts -- --import ./mocks/mocks.tsv",
+    "cli:generate": "npm run ts ./src/main.cli.ts -- --generate 50 ./mocks/new-mocks.tsv http://localhost:3123/api",
+    "mock:server": "json-server ./mocks/mock-server-data.json --port 3123 --host localhost"
   },
   "devDependencies": {
     "@types/node": "20.12.7",
@@ -35,6 +37,10 @@
     "npm": "^10"
   },
   "dependencies": {
-    "chalk": "^5.4.1"
+    "chalk": "^5.4.1",
+    "dayjs": "^1.11.13",
+    "got": "^14.4.6",
+    "json-server": "^1.0.0-beta.3",
+    "tslib": "^2.8.1"
   }
 }
