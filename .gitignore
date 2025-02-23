@@ -11,3 +11,5 @@ coverage
 *.log
 
 mocks/new-mocks.tsv
+
+.env
