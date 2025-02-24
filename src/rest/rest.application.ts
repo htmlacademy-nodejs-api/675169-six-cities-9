@@ -10,6 +10,7 @@ export class RestApplication {
     @inject(Component.Config) private readonly config: Config<RestSchema>,
   ) {}
 
+  // TODO: incapsulate logs
   public async init() {
     this.logger.info('Application initialization');
 

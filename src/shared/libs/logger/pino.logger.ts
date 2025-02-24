@@ -7,29 +7,27 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class PinoLogger implements Logger {
-  private readonly logger: PinoInstance;
+  private logFilePath = 'logs/rest.log';
+  private destination = resolve(getCurrentModuleDirectoryPath(), '../../../', this.logFilePath);
+  private multiTransport = transport({
+    targets: [
+      {
+        target: 'pino/file',
+        options: { destination: this.destination },
+        level: 'debug'
+      },
+      {
+        target: 'pino/file',
+        level: 'info',
+        options: {},
+      }
+    ],
+  });
+
+  private readonly logger = pino({}, this.multiTransport);
+
 
   constructor() {
-    const modulePath = getCurrentModuleDirectoryPath();
-    const logFilePath = 'logs/rest.log';
-    const destination = resolve(modulePath, '../../../', logFilePath);
-
-    const multiTransport = transport({
-      targets: [
-        {
-          target: 'pino/file',
-          options: { destination },
-          level: 'debug'
-        },
-        {
-          target: 'pino/file',
-          level: 'info',
-          options: {},
-        }
-      ],
-    });
-
-    this.logger = pino({}, multiTransport);
     this.logger.info('Logger created…');
   }
 
