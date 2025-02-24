@@ -1,2 +1,2 @@
-export { OfferGenerator } from './offer-generator.interface.js';
-export { TSVOfferGenerator } from './tsv-offer-generator.js';
+export * from './offer-generator.interface.js';
+export * from './tsv-offer-generator.js';
