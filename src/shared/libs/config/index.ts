@@ -1,3 +1,3 @@
-export { RestConfig } from './rest.config.js';
-export { Config } from './config.interface.js';
-export { RestSchema } from './rest.schema.js';
+export * from './rest.config.js';
+export * from './config.interface.js';
+export * from './rest.schema.js';

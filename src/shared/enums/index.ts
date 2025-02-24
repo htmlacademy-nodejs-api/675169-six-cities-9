@@ -1,3 +1,3 @@
-export { CityEnum } from './city.enum.js';
-export { HousingEnum } from './housing.enum.js';
-export { ComfortsEnum } from './comforts.enum.js';
+export * from './city.enum.js';
+export * from './housing.enum.js';
+export * from './comforts.enum.js';
