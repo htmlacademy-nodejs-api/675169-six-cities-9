@@ -28,3 +28,9 @@ export const DECIMAL_PLACES_FOUR = 1;
 
 export const PASSWORD_MIN_NUMBER = 6;
 export const PASSWORD_MAX_NUMBER = 12;
+
+export const TITLE_MIN_LENGTH = 10;
+export const TITLE_MAX_LENGTH = 100;
+
+export const DESCRIPTION_MIN_LENGTH = 20;
+export const DESCRIPTION_MAX_LENGTH = 10204;
