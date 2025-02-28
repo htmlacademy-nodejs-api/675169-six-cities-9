@@ -46,10 +46,7 @@ export class ImportCommand implements Command {
       password: DEFAULT_USER_PASSWORD
     }, this.salt);
 
-
-    const createdOffer = await this.offerService.create({...offer, userId: user.id});
-
-    await this.offerService.create({...createdOffer, userId: user.id});
+    await this.offerService.create({...offer, userId: user.id});
   }
 
   private onCompleteImport(count: number) {
