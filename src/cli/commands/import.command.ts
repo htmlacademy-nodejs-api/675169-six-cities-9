@@ -17,21 +17,16 @@ import { getMongoURI } from '../../shared/helpers/index.js';
 export class ImportCommand implements Command {
   public readonly name = '--import';
 
-  private userService: UserService;
-
-  private offerService: OfferService;
-  private databaseClient: DatabaseClient;
-  private logger: Logger;
   private salt: string;
+
+  private logger: Logger = new ConsoleLogger();
+  private userService: UserService = new DefaultUserService(this.logger, UserModel);
+  private offerService: OfferService = new DefaultOfferService(this.logger, OfferModel);
+  private databaseClient: DatabaseClient = new MongoDatabaseClient(this.logger);
 
   constructor() {
     this.onImportedOffer = this.onImportedOffer.bind(this);
     this.onCompleteImport = this.onCompleteImport.bind(this);
-
-    this.logger = new ConsoleLogger();
-    this.offerService = new DefaultOfferService(this.logger, OfferModel);
-    this.userService = new DefaultUserService(this.logger, UserModel);
-    this.databaseClient = new MongoDatabaseClient(this.logger);
   }
 
   private async onImportedOffer(offer: Offer, resolve: () => void) {
@@ -41,7 +36,7 @@ export class ImportCommand implements Command {
 
   private async saveOffer(offer: Offer) {
 
-    const user = await this.userService.findOrCreate({
+    const user = await this.userService.findByEmailOrCreate({
       ...offer.author,
       password: DEFAULT_USER_PASSWORD
     }, this.salt);
