@@ -11,11 +11,17 @@ export const RATING_MAX = 5;
 export const ROOMS_NUMBER_MIN = 1;
 export const ROOMS_NUMBER_MAX = 8;
 
+export const roomsNumberValidation = { min: ROOMS_NUMBER_MIN, max: ROOMS_NUMBER_MAX };
+
 export const RENT_PRICE_MIN = 100;
 export const RENT_PRICE_MAX = 100000;
 
+export const rentPriceValidation = { min: RENT_PRICE_MIN, max: RENT_PRICE_MAX };
+
 export const GUESTS_NUMBER_MIN = 1;
 export const GUESTS_NUMBER_MAX = 10;
+
+export const guestsNumberValidation = { min: GUESTS_NUMBER_MIN, max: GUESTS_NUMBER_MAX };
 
 export const LATITUDE = 90;
 export const LONGITUDE = 180;

@@ -48,7 +48,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       guestsNumber: Number(guestsNumber),
       rentPrice: Number(rentPrice),
       comforts: this.parseComforts(comforts),
-      coordinate: this.parseCoordintates(coordinate),
+      coordinates: this.parseCoordintates(coordinate),
       author: this.parseUser(author)
     };
   }

@@ -41,7 +41,7 @@ export class ImportCommand implements Command {
       password: DEFAULT_USER_PASSWORD
     }, this.salt);
 
-    await this.offerService.create({...offer, userId: user.id});
+    await this.offerService.create({...offer, userId: user.id, coordinates: [offer.coordinates.latitude, offer.coordinates.longitude]});
   }
 
   private onCompleteImport(count: number) {

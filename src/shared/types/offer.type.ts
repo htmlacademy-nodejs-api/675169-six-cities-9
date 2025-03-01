@@ -15,6 +15,6 @@ export type Offer = {
   guestsNumber: number;
   rentPrice: number;
   comforts: ComfortList;
-  coordinate: Coordinate;
+  coordinates: Coordinate;
   author: User
 }

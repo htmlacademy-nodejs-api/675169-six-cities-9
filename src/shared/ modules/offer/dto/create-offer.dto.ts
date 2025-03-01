@@ -1,5 +1,5 @@
 import { CityEnum, HousingEnum } from '../../../enums/index.js';
-import { ComfortList, Coordinate, User } from '../../../types/index.js';
+import { ComfortList, User } from '../../../types/index.js';
 
 export class CreateOfferDto {
   title: string;
@@ -15,6 +15,6 @@ export class CreateOfferDto {
   guestsNumber: number;
   rentPrice: number;
   comforts: ComfortList;
-  coordinate: Coordinate;
+  coordinates: number[];
   userId: User;
 }
