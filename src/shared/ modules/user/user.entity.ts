@@ -26,7 +26,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   public image: string;
 
   @prop({ default: false })
-  public pro: boolean;
+  public isPro: boolean;
 
   constructor(userData: User) {
     super();

@@ -81,7 +81,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       name,
       email,
       image,
-      pro: this.parseBoolean(pro)
+      isPro: this.parseBoolean(pro)
     };
   }
 
