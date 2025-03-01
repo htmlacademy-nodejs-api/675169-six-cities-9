@@ -43,7 +43,6 @@
     "chalk": "^5.4.1",
     "convict": "^6.2.4",
     "convict-format-with-validator": "^6.2.0",
-    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "got": "^14.4.6",
     "inversify": "^6.2.2",

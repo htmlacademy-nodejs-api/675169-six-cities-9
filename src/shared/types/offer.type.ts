@@ -4,7 +4,6 @@ import { ComfortList, Coordinate, User } from './index.js';
 export type Offer = {
   title: string;
   description: string;
-  postDate: Date;
   city: CityEnum;
   preview: string;
   images: string[];

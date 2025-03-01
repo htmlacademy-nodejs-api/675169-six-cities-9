@@ -1,7 +1,6 @@
-import dayjs from 'dayjs';
 import { MockServerData } from '../../types/index.js';
 import { generateRandomValue, getRandomBoolean, getRandomItem, getRandomItems } from '../../helpers/index.js';
-import { DECIMAL_PLACES_FOUR, DECIMAL_PLACES_ONE, FIRST_WEEK_DAY, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, LAST_WEEK_DAY, LATITUDE, LONGITUDE, RATING_MAX, RATING_MIN, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
+import { DECIMAL_PLACES_FOUR, DECIMAL_PLACES_ONE, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, LATITUDE, LONGITUDE, RATING_MAX, RATING_MIN, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
 import { OfferGenerator } from './index.js';
 
 export class TSVOfferGenerator implements OfferGenerator {
@@ -10,7 +9,6 @@ export class TSVOfferGenerator implements OfferGenerator {
   public generate(): string {
     const title = getRandomItem(this.mockData.titles);
     const description = getRandomItem(this.mockData.descriptions);
-    const postDate = dayjs().subtract(generateRandomValue(FIRST_WEEK_DAY, LAST_WEEK_DAY), 'day').toISOString();
     const city = getRandomItem(this.mockData.cities);
     const preview = getRandomItem(this.mockData.previews);
     const images = this.mockData.images;
@@ -33,7 +31,6 @@ export class TSVOfferGenerator implements OfferGenerator {
     const result = [
       title,
       description,
-      postDate,
       city,
       preview,
       images,

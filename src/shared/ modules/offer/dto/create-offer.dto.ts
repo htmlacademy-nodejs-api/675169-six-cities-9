@@ -4,7 +4,6 @@ import { ComfortList, User } from '../../../types/index.js';
 export class CreateOfferDto {
   title: string;
   description: string;
-  postDate: Date;
   city: CityEnum;
   preview: string;
   images: string[];
