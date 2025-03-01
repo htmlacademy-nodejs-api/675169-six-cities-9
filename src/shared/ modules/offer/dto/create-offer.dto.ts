@@ -1,7 +1,7 @@
-import { CityEnum, HousingEnum } from '../enums/index.js';
-import { ComfortList, Coordinate, User } from './index.js';
+import { CityEnum, HousingEnum } from '../../../enums/index.js';
+import { ComfortList, User } from '../../../types/index.js';
 
-export type Offer = {
+export class CreateOfferDto {
   title: string;
   description: string;
   city: CityEnum;
@@ -9,11 +9,11 @@ export type Offer = {
   images: string[];
   premium: boolean;
   rating: number;
-  housingType: HousingEnum,
+  housingType: HousingEnum;
   roomsNumber: number;
   guestsNumber: number;
   rentPrice: number;
   comforts: ComfortList;
-  coordinates: Coordinate;
-  author: User
+  coordinates: number[];
+  userId: User;
 }

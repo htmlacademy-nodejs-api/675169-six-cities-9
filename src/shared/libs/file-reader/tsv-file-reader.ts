@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 import { FileReader } from './file-reader.interface.js';
 import { CityEnum, HousingEnum } from '../../enums/index.js';
-import { ComfortList, ComfortType, Coordinate, Image, User } from '../../types/index.js';
+import { ComfortList, ComfortType, Coordinate, User } from '../../types/index.js';
 import { NEWLINE, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
 import { createReadStream } from 'node:fs';
 import { Offer } from '../../types/offer.type.js';
@@ -19,7 +19,6 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     const [
       title,
       description,
-      postDate,
       city,
       preview,
       images,
@@ -37,10 +36,9 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return {
       title,
       description,
-      postDate: new Date(postDate),
       city: city as CityEnum,
-      preview: { image: preview},
-      images: this.parseImages(images),
+      preview: preview,
+      images: this.parseStringToArray(images),
       premium: this.parseBoolean(premium),
       rating: Number(parseFloat(rating).toFixed(1)),
       housingType: housingType as HousingEnum,
@@ -48,13 +46,13 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       guestsNumber: Number(guestsNumber),
       rentPrice: Number(rentPrice),
       comforts: this.parseComforts(comforts),
-      coordinate: this.parseCoordintates(coordinate),
+      coordinates: this.parseCoordintates(coordinate),
       author: this.parseUser(author)
     };
   }
 
-  private parseImages(imagesString: string): Image[] {
-    return imagesString.split(SEMICOLON).map((image) => ({ image }));
+  private parseStringToArray(imagesString: string): string[] {
+    return imagesString.split(SEMICOLON);
   }
 
   private parseBoolean(booleanSting: string): boolean {
@@ -75,14 +73,13 @@ export class TSVFileReader extends EventEmitter implements FileReader {
   }
 
   private parseUser(userString: string): User {
-    const [name, email, image, password, pro] = userString.split(SEMICOLON);
+    const [name, email, image, pro] = userString.split(SEMICOLON);
 
     return {
       name,
       email,
-      image: { image },
-      password,
-      pro: this.parseBoolean(pro)
+      image,
+      isPro: this.parseBoolean(pro)
     };
   }
 
@@ -107,7 +104,10 @@ export class TSVFileReader extends EventEmitter implements FileReader {
         importedRowCount++;
 
         const parsedOffer = this.parseLineToOffer(completeRow);
-        this.emit('line', parsedOffer);
+
+        await new Promise((resolve) => {
+          this.emit('line', parsedOffer, resolve);
+        });
 
         nextLinePosition = remainingData.indexOf(NEWLINE);
       }

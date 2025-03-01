@@ -1,4 +1,4 @@
-import { Logger as PinoInstance, pino, transport } from 'pino';
+import { pino, transport } from 'pino';
 import { resolve } from 'node:path';
 
 import { Logger } from './logger.interface.js';
@@ -7,6 +7,7 @@ import { injectable } from 'inversify';
 
 @injectable()
 export class PinoLogger implements Logger {
+
   private logFilePath = 'logs/rest.log';
   private destination = resolve(getCurrentModuleDirectoryPath(), '../../../', this.logFilePath);
   private multiTransport = transport({
