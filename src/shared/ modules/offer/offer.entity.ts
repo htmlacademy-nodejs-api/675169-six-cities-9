@@ -5,11 +5,6 @@ import { HousingEnum } from '../../enums/index.js';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, LATITUDE, LONGITUDE, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../constants/index.js';
 import { UserEntity } from '../user/index.js';
 
-class ImageEntity {
-  @prop()
-  public image: string;
-}
-
 class CoordinateEntity {
   @prop({ min: -LATITUDE, max: LATITUDE })
     latitude: number;
@@ -48,24 +43,15 @@ export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({
     required: true,
-    type: () => ImageEntity
+    type: () => String
   })
-  public preview: ImageEntity;
+  public preview: string;
 
   @prop({
     required: true,
-    type: () => [ImageEntity],
-    // validate: {
-    //   validator: (v: ImageEntity[]) => {
-    //     console.log(v);
-    //     console.log(v.length);
-
-    //     return v.length === 6;
-    //   },
-    //   message: 'Should be always 6 images',
-    // }
+    type: () => [String],
   })
-  public images: ImageEntity[];
+  public images: string[];
 
   @prop({ required: true, default: false })
   public premium: boolean;

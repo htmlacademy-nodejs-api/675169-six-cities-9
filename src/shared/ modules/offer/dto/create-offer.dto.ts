@@ -1,13 +1,13 @@
 import { CityEnum, HousingEnum } from '../../../enums/index.js';
-import { ComfortList, Coordinate, Image, User } from '../../../types/index.js';
+import { ComfortList, Coordinate, User } from '../../../types/index.js';
 
 export class CreateOfferDto {
   title: string;
   description: string;
   postDate: Date;
   city: CityEnum;
-  preview: Image;
-  images: Image[];
+  preview: string;
+  images: string[];
   premium: boolean;
   rating: number;
   housingType: HousingEnum;

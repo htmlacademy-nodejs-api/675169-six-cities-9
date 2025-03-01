@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 import { FileReader } from './file-reader.interface.js';
 import { CityEnum, HousingEnum } from '../../enums/index.js';
-import { ComfortList, ComfortType, Coordinate, Image, User } from '../../types/index.js';
+import { ComfortList, ComfortType, Coordinate, User } from '../../types/index.js';
 import { NEWLINE, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
 import { createReadStream } from 'node:fs';
 import { Offer } from '../../types/offer.type.js';
@@ -39,8 +39,8 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       description,
       postDate: new Date(postDate),
       city: city as CityEnum,
-      preview: { image: preview},
-      images: this.parseImages(images),
+      preview: preview,
+      images: this.parseStringToArray(images),
       premium: this.parseBoolean(premium),
       rating: Number(parseFloat(rating).toFixed(1)),
       housingType: housingType as HousingEnum,
@@ -53,8 +53,8 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     };
   }
 
-  private parseImages(imagesString: string): Image[] {
-    return imagesString.split(SEMICOLON).map((image) => ({ image }));
+  private parseStringToArray(imagesString: string): string[] {
+    return imagesString.split(SEMICOLON);
   }
 
   private parseBoolean(booleanSting: string): boolean {
@@ -80,7 +80,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return {
       name,
       email,
-      image: { image },
+      image,
       pro: this.parseBoolean(pro)
     };
   }

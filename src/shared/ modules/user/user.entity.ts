@@ -2,11 +2,6 @@ import { User } from '../../types/index.js';
 import { defaultClasses, getModelForClass, prop, modelOptions } from '@typegoose/typegoose';
 import { createSHA256 } from '../../helpers/index.js';
 
-class ImageEntity {
-  @prop({ required: true })
-  public image: string;
-}
-
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface UserEntity extends defaultClasses.Base {}
 
@@ -28,7 +23,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   private password?: string;
 
   @prop({ default: { image: 'default-image.jpg'} })
-  public image: ImageEntity;
+  public image: string;
 
   @prop({ default: false })
   public pro: boolean;
