@@ -44,9 +44,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true, default: false })
   public premium: boolean;
 
-  @prop({ required: true, min: 1, max: 5})
-  public rating: number;
-
   @prop({
     required: true,
     type: () => String,
@@ -72,7 +69,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({
     type: () => [Number],
     required: true,
-    // TODO: validation?
   })
   public coordinates: number[];
 
