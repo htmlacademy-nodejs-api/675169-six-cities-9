@@ -38,7 +38,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/user'
-
         "409":
           description: Пользователь с таким email уже существует.
 
@@ -79,10 +78,6 @@ paths:
       summary: Деавторизация пользователя (logout)
       description: Пользователь завершает сеанс в авторизованном режиме
 
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
-
       responses:
         "201":
           description: Деавторизация пользователя произошла.
@@ -95,32 +90,21 @@ paths:
           description: что то пошло не так
 
   /users/state:
-    tags:
-      - users
-    summary: Проверка состояния пользователя
-    description: Проверка авторизирован пользователь или нет
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Проверка авторизирован пользователь или нет
 
-    requestBody:
-      description: Тело запроса не содержит данных.
-      application/json:
-        schema:
-          required: true
-          type: object
-          properties:
-            token:
-              type: string
-              example: sdsdsdsd
-
-    responses:
-      "201":
-        description: Пользователь авторизирован.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/successResponse'
-
-      "409":
-        description: Пользователь не авторизирован.
+      responses:
+        "201":
+          description: Пользователь авторизирован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+        "409":
+          description: Пользователь не авторизирован.
 
   /offers:
     post:
@@ -154,10 +138,6 @@ paths:
       summary: Получение списка предложений по аренде
       description: Возвращает спискок предложений по аренде
 
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
-
       responses:
         "201":
           description: Список предложение по арендею
@@ -185,10 +165,6 @@ paths:
           required: true
           schema:
             type: string
-
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
 
       responses:
         "201":
@@ -242,10 +218,6 @@ paths:
           schema:
             type: string
 
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
-
       responses:
         "201":
           description: Предложении по аренде удалено.
@@ -263,10 +235,6 @@ paths:
         - offers
       summary: Получения списка предложений, добавленных в избранное
       description: Возвращает список предложений по аренде добавленных в избранное
-
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
 
       responses:
         "201":
@@ -296,10 +264,6 @@ paths:
           schema:
             type: string
 
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
-
       responses:
         "201":
           description: Предложении по аренде добавлено в избранное.
@@ -323,10 +287,6 @@ paths:
           required: true
           schema:
             type: string
-
-      requestBody:
-        description: Тело запроса не содержит данных.
-        content: {}
 
       responses:
         "201":
@@ -353,10 +313,6 @@ paths:
           schema:
             type: string
 
-      requestBody:
-        description: Тело запроса не содержит данных
-        content: {}
-
       responses:
         "201":
           description: Список преминальных предложений по аренде для выбраноого города
@@ -372,7 +328,7 @@ paths:
           description:  Город не существует.
 
 
-  /comments/{offerId}:
+  /comments/{offerId}/data:
     get:
       tags:
         - comments
@@ -385,10 +341,6 @@ paths:
           schema:
             type: string
 
-      requestBody:
-        description: Тело запроса не содержит данных
-        content: {}
-
       responses:
         "201":
           description: Список комментариев к предложению по аренде
@@ -399,7 +351,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/comment'
-
         "409":
           description: Пользователь с таким email уже существует.
 
@@ -408,6 +359,12 @@ paths:
         - comments
       summary: Добавление комментария для предложения
       description: Добавляет новый комментарий для предложения по аренде.
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
 
       requestBody:
         description: Информация для создания нового комментария для предложения по аренде.
@@ -515,8 +472,10 @@ components:
           example: 'shining.jpg'
 
         images:
-          type: string[]
-          example: 'category-book.jpg,category-disk.jpg'
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
 
         premium:
           type: boolean
@@ -543,8 +502,10 @@ components:
           example: 1000
 
         comforts:
-          type: string[]
-          example: 'category-book.jpg,category-disk.jpg'
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
 
         coordinates:
           type: object
@@ -619,8 +580,10 @@ components:
           example: 'shining.jpg'
 
         images:
-          type: string[]
-          example: 'category-book.jpg,category-disk.jpg'
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
 
         premium:
           type: boolean
@@ -647,8 +610,10 @@ components:
           example: 1000
 
         comforts:
-          type: string[]
-          example: 'category-book.jpg,category-disk.jpg'
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
 
         coordinates:
           type: object
