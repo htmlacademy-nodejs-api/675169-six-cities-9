@@ -6,4 +6,6 @@ export interface UserService {
   findByEmail(email: string): Promise<DocumentType<UserEntity> | null>;
   findById(userId: string): Promise<DocumentType<UserEntity> | null>;
   findByEmailOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
+
+  addToFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null>;
 }
