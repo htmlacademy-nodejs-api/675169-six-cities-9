@@ -8,7 +8,6 @@ export type Offer = {
   preview: string;
   images: string[];
   premium: boolean;
-  rating: number;
   housingType: HousingEnum,
   roomsNumber: number;
   guestsNumber: number;
