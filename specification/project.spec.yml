@@ -1,0 +1,660 @@
+openapi: 3.1.0
+info:
+  title: API сервер для демо-проекта «Куплю. Продам».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Куплю. Продам».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+tags:
+  - name: offers
+    description: Действия с предложениями по аренде.
+  - name: comments
+    description: Действия с комментариями.
+  - name: users
+    description: Действия с пользователем.
+
+paths:
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Создание нового пользователя
+      description: Создает пользователя на основе email и пароля
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "409":
+          description: Пользователь с таким email уже существует.
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля
+
+      requestBody:
+        description: Email и пароль пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginRequest'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь авторизирован.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: sdsdsdsd
+
+        "409":
+          description: Ошибка email или пароля.
+
+  /users/logout:
+    post:
+      tags:
+        - users
+      summary: Деавторизация пользователя (logout)
+      description: Пользователь завершает сеанс в авторизованном режиме
+
+      responses:
+        "201":
+          description: Деавторизация пользователя произошла.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+
+        "409":
+          description: что то пошло не так
+
+  /users/state:
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Проверка авторизирован пользователь или нет
+
+      responses:
+        "201":
+          description: Пользователь авторизирован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+        "409":
+          description: Пользователь не авторизирован.
+
+  /offers:
+    post:
+      tags:
+        - offers
+      summary: Создание новое предложения по аренде
+      description: Создает новое предложения по аренде и возвращает детальную информацию созданного предложения по аренде
+
+      requestBody:
+        description: Информация для создания нового предложения по аренде.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+        required: true
+
+      responses:
+        "201":
+          description: Предложение по аренде создано. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+
+        "409":
+          description: Что то пошло не так.
+
+    get:
+      tags:
+        - offers
+      summary: Получение списка предложений по аренде
+      description: Возвращает спискок предложений по аренде
+
+      responses:
+        "201":
+          description: Список предложение по арендею
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+
+        "409":
+          description: Что то пошло не так.
+
+
+  /offers/{offerId}:
+    get:
+      tags:
+        - offers
+      summary: Получение детальной информации о предложении по аренде
+      description: Возвращает детальную информацую предложения по аренде
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "201":
+          description: Детальная информация о предложении по аренде.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+
+        "409":
+          description: id не существует.
+
+    put:
+      tags:
+        - offers
+      summary: Редактирование предложения по аренде
+      description: Редактирует предложения по аренде и возвращает обновленную детальную информацию предложения по аренде
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        description: Обновленная информация предложения по аренде.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createOffer'
+
+      responses:
+        "201":
+          description: Предложение по аренде отредактировано. Объект предложения.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "409":
+          description: Предложения по аренде с таким id существует.
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения по аренде
+      description: Удаляет предложение по аренде и возвращает сообщение о успехе удаления или ошибке удаления
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "201":
+          description: Предложении по аренде удалено.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+
+        "409":
+          description: id не существует.
+
+  /offers/favorite:
+    get:
+      tags:
+        - offers
+      summary: Получения списка предложений, добавленных в избранное
+      description: Возвращает список предложений по аренде добавленных в избранное
+
+      responses:
+        "201":
+          description: Список предложение по аренде, добавленных в избранное
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+
+        "409":
+          description: Что то пошло не так.
+
+  /offers/{offerId}/favorite:
+    post:
+      tags:
+        - offers
+      summary: Добавление предложения по аренде в избранное
+      description: Добавление предложения по аренде в избранное и возвращает обновленный список предложений о аренде добавленных в избранное
+
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "201":
+          description: Предложении по аренде добавлено в избранное.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+
+        "409":
+          description:  что то пошло не так.
+
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения по аренде из избранного
+      description: Удаляет предложения по аренде из избранного и обновленный список предложений о аренде добавленных в избранное
+
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "201":
+          description: Предложении по аренде удалено из избранного.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/successResponse'
+
+        "409":
+          description: что то пошло не так.
+
+
+  /offers/{city}/premium:
+    get:
+      tags:
+        - offers
+      summary: Получение списка премиальных предложений для города
+      description: Возвращает список премиальных предложений по аренде для конкретного города
+      parameters:
+        - name: city
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "201":
+          description: Список преминальных предложений по аренде для выбраноого города
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+
+        "409":
+          description:  Город не существует.
+
+
+  /comments/{offerId}/data:
+    get:
+      tags:
+        - comments
+      summary: Получение списка комментариев для предложения по аренде
+      description: Возвращает список комментариев для предложения по аренде
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "201":
+          description: Список комментариев к предложению по аренде
+
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        "409":
+          description: Пользователь с таким email уже существует.
+
+    post:
+      tags:
+        - comments
+      summary: Добавление комментария для предложения
+      description: Добавляет новый комментарий для предложения по аренде.
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+
+      requestBody:
+        description: Информация для создания нового комментария для предложения по аренде.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createComment'
+        required: true
+
+      responses:
+        "201":
+          description: Комментарий к предложению по аренде создан. Объект комментария.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+
+        "409":
+          description: Что то пошло не так.
+
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+        name:
+          type: string
+          example: Keks
+
+        image:
+          type: string
+          example: image.jpg
+
+        isPro:
+          type: boolean
+          example: true
+
+        password:
+          type: string
+          example: 123456
+
+    user:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+        name:
+          type: string
+          example: Keks
+
+        image:
+          type: string
+          example: image.jpg
+
+        isPro:
+          type: boolean
+          example: true
+
+    successResponse:
+      type: object
+
+      properties:
+        success:
+          type: boolean
+          example: true
+
+    loginRequest:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: email@gmail.com
+        password:
+          type: string
+          example: sfddfghfgh
+
+    createOffer:
+      type: object
+
+      properties:
+        title:
+          type: string
+          example: 'Договор аренды торговой площади'
+
+        description:
+          type: string
+          example: 'Контракт на аренду квартиры для проживания'
+
+        city:
+          type: string
+          example: 'Paris'
+
+        preview:
+          type: string
+          example: 'shining.jpg'
+
+        images:
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
+
+        premium:
+          type: boolean
+          example: true
+
+        rating:
+          type: number
+          example: 2
+
+        housingType:
+          type: string
+          example: 'Apartment'
+
+        roomsNumber:
+          type: number
+          example: 2
+
+        guestsNumber:
+          type: number
+          example: 2
+
+        rentPrice:
+          type: number
+          example: 1000
+
+        comforts:
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
+
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              example: 20
+
+            longitude:
+              type: number
+              example: 20
+
+    createComment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: 'Отличное расположение'
+
+        rating:
+          type: number
+          example: 4
+
+        authorId:
+          type: string
+          example: 'fddfdf'
+
+    comment:
+      type: object
+
+      properties:
+        text:
+          type: string
+          example: 'Отличное расположение'
+
+        rating:
+          type: number
+          example: 4
+
+        authorId:
+          type: string
+          example: 'dfdfdf'
+
+        isCreated:
+          type: string
+          format: date-time
+          example: "2024-02-28T15:30:00Z"
+
+    offer:
+      type: object
+
+      properties:
+        title:
+          type: string
+          example: 'Договор аренды торговой площади'
+
+        description:
+          type: string
+          example: 'Контракт на аренду квартиры для проживания'
+
+        isCreated:
+          type: string
+          format: date-time
+          example: "2024-02-28T15:30:00Z"
+
+        city:
+          type: string
+          example: 'Paris'
+
+        preview:
+          type: string
+          example: 'shining.jpg'
+
+        images:
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
+
+        premium:
+          type: boolean
+          example: true
+
+        rating:
+          type: number
+          example: 2
+
+        housingType:
+          type: string
+          example: 'Apartment'
+
+        roomsNumber:
+          type: number
+          example: 2
+
+        guestsNumber:
+          type: number
+          example: 2
+
+        rentPrice:
+          type: number
+          example: 1000
+
+        comforts:
+          type: array
+          items:
+            type: string
+            example: 'category-book.jpg,category-disk.jpg'
+
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: number
+              example: 20
+
+            longitude:
+              type: number
+              example: 20
+
+        commentsNumber:
+          type: number
+          example: 1
+
+        isFavorite:
+          type: boolean
+          example: true
+
+        user:
+          type: object
+          properties:
+            email:
+              type: string
+              example: keks@htmlacademy.ru
+
+            name:
+              type: string
+              example: Keks
+
+            image:
+              type: string
+              example: image.jpg
+
+            isPro:
+              type: boolean
+              example: true
+
+
+
+
+
+
