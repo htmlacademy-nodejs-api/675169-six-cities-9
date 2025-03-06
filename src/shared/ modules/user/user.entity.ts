@@ -29,12 +29,6 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
   @prop({ default: false })
   public isPro: boolean;
 
-  @prop({
-    required: true,
-    ref: OfferEntity
-  })
-  public offerId: Ref<OfferEntity>;
-
   @prop({ ref: () => OfferEntity })
   public favorites?: Ref<OfferEntity>[];
 

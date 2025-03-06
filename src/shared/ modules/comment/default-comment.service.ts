@@ -1,9 +1,9 @@
 import { DocumentType, types } from '@typegoose/typegoose';
 import { inject, injectable } from 'inversify';
-import { Component, SortType } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { CommentEntity, CommentService, CreateCommentDto } from './index.js';
 import { MAX_COMMENTS_NUMBER } from '../../constants/index.js';
+import { Component, SortType } from '../../enums/index.js';
 
 @injectable()
 export class DefaultCommentService implements CommentService {
@@ -22,15 +22,17 @@ export class DefaultCommentService implements CommentService {
     return result;
   }
 
-  public async findBy(keyWord: string): Promise<DocumentType<CommentEntity> | null> {
-    return await this.commentModel.findOne({ keyWord });
+  // TODO do we need this?
+  public async findAllByAuthorId(authorId: string): Promise<DocumentType<CommentEntity>[]> {
+    return await this.commentModel.find({ author: authorId }).exec();
+
   }
 
-  public async findAllById(offerId: string): Promise<DocumentType<CommentEntity>[]> {
+  public async findAllByOfferId(offerId: string): Promise<DocumentType<CommentEntity>[]> {
     return await this.commentModel.find({ offerId }).sort({ createdAt: SortType.Down}).limit(MAX_COMMENTS_NUMBER).exec();
   }
 
-  public async deleteAllById(offerId: string): Promise<void> {
+  public async deleteAllByOfferId(offerId: string): Promise<void> {
     const result = await this.commentModel.deleteMany({ offerId }).exec();
 
     this.logger.info(`${result.deletedCount} were deleted`);

@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 import { types } from '@typegoose/typegoose';
-import { Component } from '../../types/index.js';
+import { Component } from '../../enums/index.js';
 import { CommentEntity, CommentModel } from './comment.entity.js';
 import { CommentService, DefaultCommentService } from './index.js';
 

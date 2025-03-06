@@ -1,8 +1,9 @@
 import { DocumentType, types } from '@typegoose/typegoose';
 import { inject, injectable } from 'inversify';
 import { CreateUserDto, UserService, UserEntity } from './index.js';
-import { Component } from '../../types/index.js';
+import { Component } from '../../enums/index.js';
 import { Logger } from '../../libs/logger/index.js';
+import { FullOffer } from '../../types/index.js';
 
 @injectable()
 export class DefaultUserService implements UserService {
@@ -39,25 +40,16 @@ export class DefaultUserService implements UserService {
     return this.create(dto, salt);
   }
 
-  public async addToFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+  public async addToOrRemoveFromFavoritesById(userId: string, offerId: string, isAdding: boolean = true): Promise<DocumentType<UserEntity> | null> {
+    const offer = { favorites: offerId };
     return await this.userModel.findByIdAndUpdate(
       userId,
-      { $addToSet: { favorites: offerId } },
+      {...isAdding ? { $addToSet: offer } : { $pull: offer }},
       { new: true }
     ).exec();
   }
 
-  public async removeFromFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
-    return await this.userModel.findByIdAndUpdate(
-      userId,
-      { $pull: { favorites: offerId } },
-      { new: true }
-    ).exec();
-  }
-
-  // TODO: add return type
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async getAllFavorites(userId: string): Promise<DocumentType<any> | null> {
+  public async getAllFavorites(userId: string): Promise<DocumentType<FullOffer>[]> {
     return await this.userModel.aggregate([
       { $match: { _id: userId } },
       {
@@ -83,7 +75,34 @@ export class DefaultUserService implements UserService {
             }
           }
         }
-      }
+      },
+      { $unwind: '$favoriteOffers' },
+      {
+        $lookup: {
+          from: 'comments',
+          let: { offerId: '$favoriteOffers._id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$$offerId', '$offerId'] } } },
+            { $project: { _id: 1, rating: 1 } }
+          ],
+          as: 'comments'
+        }
+      },
+      {
+        $addFields: {
+          'favoriteOffers.commentsNumber': { $size: '$comments' },
+          'favoriteOffers.rating': { $avg: '$comments.rating' }
+        }
+      },
+      { $unset: 'comments' },
+      {
+        $group: {
+          _id: '$_id',
+          favoriteOffers: { $push: '$favoriteOffers' }
+        }
+      },
+      { $project: { favoriteOffers: 1, _id: 0 } }
     ]).exec();
+
   }
 }
