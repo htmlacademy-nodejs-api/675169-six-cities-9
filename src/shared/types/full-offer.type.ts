@@ -1,7 +1,10 @@
 import { CityEnum, HousingEnum } from '../enums/index.js';
-import { ComfortList, Coordinate, User } from './index.js';
+import { ComfortList, Coordinate } from './index.js';
 
-export type Offer = {
+export type FullOffer = {
+  commentsCount: number,
+  rating: number,
+  isFavorite: boolean,
   title: string;
   description: string;
   city: CityEnum;
@@ -14,5 +17,4 @@ export type Offer = {
   rentPrice: number;
   comforts: ComfortList;
   coordinates: Coordinate;
-  author: User
 }

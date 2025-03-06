@@ -8,6 +8,8 @@ export const LAST_WEEK_DAY = 7;
 export const RATING_MIN = 1;
 export const RATING_MAX = 5;
 
+export const ratingValidation = { min: 1, max: 5 };
+
 export const ROOMS_NUMBER_MIN = 1;
 export const ROOMS_NUMBER_MAX = 8;
 
@@ -40,3 +42,8 @@ export const TITLE_MAX_LENGTH = 100;
 
 export const DESCRIPTION_MIN_LENGTH = 20;
 export const DESCRIPTION_MAX_LENGTH = 10204;
+
+export const MAX_PREMIUM_NUMBER = 3;
+export const MAX_COMMENTS_NUMBER = 50;
+
+export const MAX_ITEMS_PER_PAGE = 60;

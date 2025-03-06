@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { Logger } from '../logger/index.js';
 import { config } from 'dotenv';
 import { configRestSchema, RestSchema } from './rest.schema.js';
-import { Component } from '../../types/index.js';
+import { Component } from '../../enums/index.js';
 
 
 @injectable()
