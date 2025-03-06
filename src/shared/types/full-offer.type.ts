@@ -1,7 +1,7 @@
 import { CityEnum, HousingEnum } from '../enums/index.js';
 import { ComfortList, Coordinate } from './index.js';
 
-export type OfferWithCommentsCountAndRating = {
+export type FullOffer = {
   commentsCount: number,
   rating: number,
   isFavorite: boolean,

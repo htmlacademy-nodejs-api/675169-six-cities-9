@@ -8,7 +8,7 @@ export const LAST_WEEK_DAY = 7;
 export const RATING_MIN = 1;
 export const RATING_MAX = 5;
 
-export const ratingValidation = { min: RATING_MIN, max: RATING_MAX };
+export const ratingValidation = { min: 1, max: 5 };
 
 export const ROOMS_NUMBER_MIN = 1;
 export const ROOMS_NUMBER_MAX = 8;
