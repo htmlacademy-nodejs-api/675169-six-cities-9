@@ -41,10 +41,9 @@ export class DefaultUserService implements UserService {
   }
 
   public async addToOrRemoveFromFavoritesById(userId: string, offerId: string, isAdding: boolean = true): Promise<DocumentType<UserEntity> | null> {
-    const offer = { favorites: offerId };
     return await this.userModel.findByIdAndUpdate(
       userId,
-      {...isAdding ? { $addToSet: offer } : { $pull: offer }},
+      isAdding ? { $addToSet: { favoriteOfferIds: offerId } } : { $pull: { favoriteOfferIds: offerId } },
       { new: true }
     ).exec();
   }
@@ -55,10 +54,10 @@ export class DefaultUserService implements UserService {
       {
         $lookup: {
           from: 'offers',
-          localField: 'favorites',
+          localField: 'favoriteOfferIds',
           foreignField: '_id',
           as: 'favoriteOffers'
-        }
+        },
       },
       {
         $addFields: {

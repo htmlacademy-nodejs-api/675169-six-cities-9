@@ -46,7 +46,7 @@ export class DefaultOfferService implements OfferService {
         let: { email: '$_email' },
         pipeline: [
           { $match: { $expr: { $eq: ['$email', '$$email'] } } },
-          { $project: { _id: 1, favorites: 1 } }
+          { $project: { _id: 1, favoriteOfferIds: 1 } }
         ],
         as: 'user'
       }
@@ -58,7 +58,7 @@ export class DefaultOfferService implements OfferService {
             if: {
               $in: [
                 '$_id',
-                { $ifNull: [{ $arrayElemAt: ['$user.favorites', 0] }, []] }
+                { $ifNull: [{ $arrayElemAt: ['$user.favoriteOfferIds', 0] }, []] }
               ]
             },
             then: true,
