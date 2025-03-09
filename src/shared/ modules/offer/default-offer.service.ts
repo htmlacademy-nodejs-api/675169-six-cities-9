@@ -2,23 +2,18 @@ import { DocumentType, types } from '@typegoose/typegoose';
 import { inject, injectable } from 'inversify';
 import { FullOffer } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
-import { OfferEntity, OfferService, CreateOfferDto } from './index.js';
+import { OfferService, CreateOfferDto } from './index.js';
 import { MAX_ITEMS_PER_PAGE, MAX_PREMIUM_NUMBER } from '../../constants/index.js';
 import { Component, SortType } from '../../enums/index.js';
+import { OfferEntity } from './offer.entity.js';
+import { Types } from 'mongoose';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.UserModel) private readonly offerModel: types.ModelType<OfferEntity>,
+    @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
   ) {}
-
-  public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
-    const result = await this.offerModel.create(dto);
-    this.logger.info(`New offer created: ${dto.title}`);
-
-    return result;
-  }
 
   private readonly aggregateArray = [
     {
@@ -43,7 +38,7 @@ export class DefaultOfferService implements OfferService {
     {
       $lookup: {
         from: 'users',
-        let: { email: '$_email' },
+        let: { email: '$email' },
         pipeline: [
           { $match: { $expr: { $eq: ['$email', '$$email'] } } },
           { $project: { _id: 1, favoriteOfferIds: 1 } }
@@ -69,15 +64,25 @@ export class DefaultOfferService implements OfferService {
     },
 
     { $unset: 'user' },
-    { $sort: { offerCount: SortType.Down } }
+    { $sort: { createdAt: SortType.Down } }
   ];
+
+  public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
+    const result = await this.offerModel.create(dto);
+    this.logger.info(`New offer created: ${dto.title}`);
+
+    return result;
+  }
 
   public async find(limit = MAX_ITEMS_PER_PAGE): Promise<DocumentType<FullOffer>[]> {
     return await this.offerModel.aggregate(this.aggregateArray).limit(limit).exec();
   }
 
   public async findById(offerId: string): Promise<DocumentType<FullOffer> | null> {
-    return await this.offerModel.findById(offerId).aggregate(this.aggregateArray).exec();
+    return await this.offerModel.aggregate([
+      { $match: { _id: new Types.ObjectId(offerId) } },
+      ...this.aggregateArray
+    ]).then((results) => results[0] || null);
   }
 
   public async updateById(offerId: string, dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null> {
@@ -88,10 +93,11 @@ export class DefaultOfferService implements OfferService {
     return result;
   }
 
+  // TODO: return type?
   public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    const result = await this.offerModel.findByIdAndDelete(offerId).exec();
-
-    return result;
+    const res = await this.offerModel.findByIdAndDelete(offerId).exec();
+    this.logger.info(`The offer with id ${offerId} was deleted`);
+    return res;
   }
 
   public async findPremiumByCity(city: string): Promise<DocumentType<FullOffer>[]> {
