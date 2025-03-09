@@ -30,6 +30,10 @@ export class DefaultUserService implements UserService {
     return await this.userModel.findById(userId).exec();
   }
 
+  public async find(): Promise<DocumentType<UserEntity>[]> {
+    return await this.userModel.find().exec();
+  }
+
   public async findByEmailOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
 
@@ -48,16 +52,27 @@ export class DefaultUserService implements UserService {
     ).exec();
   }
 
+  // TODO: сложно. скорее всего не работает можено ли легче сделать
   public async getAllFavorites(userId: string): Promise<DocumentType<FullOffer>[]> {
-    return await this.userModel.aggregate([
-      { $match: { _id: userId } },
+    return await this.userModel.aggregate([{ $match: { _id: userId } },
+      {
+        $addFields: {
+          favoriteOfferIds: {
+            $map: {
+              input: '$favoriteOfferIds',
+              as: 'id',
+              in: { $toObjectId: '$$id' } // Преобразуем строки в ObjectId
+            }
+          }
+        }
+      },
       {
         $lookup: {
           from: 'offers',
           localField: 'favoriteOfferIds',
           foreignField: '_id',
           as: 'favoriteOffers'
-        },
+        }
       },
       {
         $addFields: {
