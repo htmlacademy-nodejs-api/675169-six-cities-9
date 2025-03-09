@@ -1,4 +1,5 @@
 import { DECIMAL_PLACES_ZERO, PASSWORD_MAX_NUMBER, PASSWORD_MIN_NUMBER } from '../constants/index.js';
+import { ClassConstructor, plainToInstance } from 'class-transformer';
 
 export function generateRandomValue(min:number, max: number, numAfterDigit = DECIMAL_PLACES_ZERO) {
   return Number(((Math.random() * (max - min)) + min).toFixed(numAfterDigit));
@@ -33,4 +34,14 @@ export function getRandomPassword(): string {
 
 export function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'UNKNOWN ERROR';
+}
+
+export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
+  return plainToInstance(someDto, plainObject, { excludeExtraneousValues: true });
+}
+
+export function createErrorObject(message: string) {
+  return {
+    error: message,
+  };
 }

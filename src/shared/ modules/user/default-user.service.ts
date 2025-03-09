@@ -30,6 +30,10 @@ export class DefaultUserService implements UserService {
     return await this.userModel.findById(userId).exec();
   }
 
+  public async find(): Promise<DocumentType<UserEntity>[]> {
+    return await this.userModel.find().exec();
+  }
+
   public async findByEmailOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
 
@@ -41,21 +45,31 @@ export class DefaultUserService implements UserService {
   }
 
   public async addToOrRemoveFromFavoritesById(userId: string, offerId: string, isAdding: boolean = true): Promise<DocumentType<UserEntity> | null> {
-    const offer = { favorites: offerId };
     return await this.userModel.findByIdAndUpdate(
       userId,
-      {...isAdding ? { $addToSet: offer } : { $pull: offer }},
+      isAdding ? { $addToSet: { favoriteOfferIds: offerId } } : { $pull: { favoriteOfferIds: offerId } },
       { new: true }
     ).exec();
   }
 
+  // TODO: сложно. скорее всего не работает можено ли легче сделать
   public async getAllFavorites(userId: string): Promise<DocumentType<FullOffer>[]> {
-    return await this.userModel.aggregate([
-      { $match: { _id: userId } },
+    return await this.userModel.aggregate([{ $match: { _id: userId } },
+      {
+        $addFields: {
+          favoriteOfferIds: {
+            $map: {
+              input: '$favoriteOfferIds',
+              as: 'id',
+              in: { $toObjectId: '$$id' } // Преобразуем строки в ObjectId
+            }
+          }
+        }
+      },
       {
         $lookup: {
           from: 'offers',
-          localField: 'favorites',
+          localField: 'favoriteOfferIds',
           foreignField: '_id',
           as: 'favoriteOffers'
         }

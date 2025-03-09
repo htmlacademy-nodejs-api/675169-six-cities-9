@@ -3,7 +3,8 @@ import { defaultClasses, getModelForClass, prop, modelOptions, Ref } from '@type
 import { CityEnum } from '../../enums/city.enum.js';
 import { HousingEnum } from '../../enums/index.js';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, guestsNumberValidation, rentPriceValidation, roomsNumberValidation, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../constants/index.js';
-import { UserEntity } from '../user/index.js';
+import { UserEntity } from '../user/user.entity.js';
+
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface OfferEntity extends defaultClasses.Base {}
