@@ -10,14 +10,14 @@ import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/index.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { LoginUserRequest } from './login-user-request.type.js';
-import { OfferRdo } from '../offer/index.js';
+import { OfferRdo, OfferService } from '../offer/index.js';
 
 @injectable()
 export class UserController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.OfferService) private readonly offerService: UserService,
+    @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
   ) {
     super(logger);

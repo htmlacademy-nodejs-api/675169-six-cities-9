@@ -9,7 +9,7 @@ import { Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
 
 @injectable()
 export class RestApplication {
-  private readonly server: Express;
+  private readonly server: Express = express();
 
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
@@ -21,9 +21,7 @@ export class RestApplication {
     @inject(Component.OfferController) private readonly offerController: Controller,
 
     @inject(Component.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilter,
-  ) {
-    this.server = express();
-  }
+  ) {}
 
   private async initExceptionFilters() {
     this.logger.info('Init exception filters');

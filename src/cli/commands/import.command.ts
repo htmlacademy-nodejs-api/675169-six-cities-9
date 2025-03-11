@@ -20,8 +20,9 @@ export class ImportCommand implements Command {
   private salt: string;
 
   private logger: Logger = new ConsoleLogger();
-  private userService: UserService = new DefaultUserService(this.logger, UserModel);
   private offerService: OfferService = new DefaultOfferService(this.logger, OfferModel);
+  private userService: UserService = new DefaultUserService(this.logger, UserModel, this.offerService);
+
   private databaseClient: DatabaseClient = new MongoDatabaseClient(this.logger);
 
   constructor() {
@@ -35,7 +36,6 @@ export class ImportCommand implements Command {
   }
 
   private async saveOffer(offer: Offer) {
-
     const user = await this.userService.findByEmailOrCreate({
       ...offer.author,
       password: DEFAULT_USER_PASSWORD

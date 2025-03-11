@@ -53,7 +53,7 @@ export class OfferController extends BaseController {
     if (!offer) {
       throw new HttpError(
         StatusCodes.CONFLICT,
-        `Offer with email «${params.offerId}» doesn't exist.`,
+        `Offer with id «${params.offerId}» doesn't exist.`,
         'OfferController'
       );
     }

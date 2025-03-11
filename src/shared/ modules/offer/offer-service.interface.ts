@@ -10,4 +10,5 @@ export interface OfferService {
   deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   findPremiumByCity(city: string): Promise<DocumentType<FullOffer>[]>;
   find(limit?: number): Promise<DocumentType<FullOffer>[]>;
+  findAllByIds(offerIds: string[]): Promise<DocumentType<FullOffer>[]>;
 }

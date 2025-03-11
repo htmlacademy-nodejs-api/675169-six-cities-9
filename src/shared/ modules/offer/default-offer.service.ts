@@ -6,7 +6,7 @@ import { OfferService, CreateOfferDto } from './index.js';
 import { MAX_ITEMS_PER_PAGE, MAX_PREMIUM_NUMBER } from '../../constants/index.js';
 import { Component, SortType } from '../../enums/index.js';
 import { OfferEntity } from './offer.entity.js';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
@@ -78,6 +78,15 @@ export class DefaultOfferService implements OfferService {
     return await this.offerModel.aggregate(this.aggregateArray).limit(limit).exec();
   }
 
+  public async findAllByIds(offerIds: string[]): Promise<DocumentType<FullOffer>[]> {
+    const objectIds = offerIds.map((id) => new mongoose.Types.ObjectId(id));
+
+    return await this.offerModel.aggregate([
+      { $match: { _id: { $in: objectIds } } },
+      ...this.aggregateArray,
+    ]).exec();
+  }
+
   public async findById(offerId: string): Promise<DocumentType<FullOffer> | null> {
     return await this.offerModel.aggregate([
       { $match: { _id: new Types.ObjectId(offerId) } },
@@ -93,10 +102,9 @@ export class DefaultOfferService implements OfferService {
     return result;
   }
 
-  // TODO: return type?
   public async deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null> {
     const res = await this.offerModel.findByIdAndDelete(offerId).exec();
-    this.logger.info(`The offer with id ${offerId} was deleted`);
+    this.logger.info(`The offer with id ${offerId} ${res ? 'was deleted' : 'was not found'}`);
     return res;
   }
 
