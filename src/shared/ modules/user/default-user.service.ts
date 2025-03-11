@@ -4,12 +4,14 @@ import { CreateUserDto, UserService, UserEntity } from './index.js';
 import { Component } from '../../enums/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { FullOffer } from '../../types/index.js';
+import { OfferService } from '../offer/index.js';
 
 @injectable()
 export class DefaultUserService implements UserService {
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
-    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>
+    @inject(Component.UserModel) private readonly userModel: types.ModelType<UserEntity>,
+    @inject(Component.OfferService) private readonly offerService: OfferService,
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
@@ -30,6 +32,10 @@ export class DefaultUserService implements UserService {
     return await this.userModel.findById(userId).exec();
   }
 
+  public async find(): Promise<DocumentType<UserEntity>[]> {
+    return await this.userModel.find().exec();
+  }
+
   public async findByEmailOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
 
@@ -41,68 +47,16 @@ export class DefaultUserService implements UserService {
   }
 
   public async addToOrRemoveFromFavoritesById(userId: string, offerId: string, isAdding: boolean = true): Promise<DocumentType<UserEntity> | null> {
-    const offer = { favorites: offerId };
     return await this.userModel.findByIdAndUpdate(
       userId,
-      {...isAdding ? { $addToSet: offer } : { $pull: offer }},
+      isAdding ? { $addToSet: { favoriteOfferIds: offerId } } : { $pull: { favoriteOfferIds: offerId } },
       { new: true }
     ).exec();
   }
 
   public async getAllFavorites(userId: string): Promise<DocumentType<FullOffer>[]> {
-    return await this.userModel.aggregate([
-      { $match: { _id: userId } },
-      {
-        $lookup: {
-          from: 'offers',
-          localField: 'favorites',
-          foreignField: '_id',
-          as: 'favoriteOffers'
-        }
-      },
-      {
-        $addFields: {
-          favoriteOffers: {
-            $map: {
-              input: '$favoriteOffers',
-              as: 'offer',
-              in: {
-                $mergeObjects: [
-                  '$$offer',
-                  { isFav: true }
-                ]
-              }
-            }
-          }
-        }
-      },
-      { $unwind: '$favoriteOffers' },
-      {
-        $lookup: {
-          from: 'comments',
-          let: { offerId: '$favoriteOffers._id' },
-          pipeline: [
-            { $match: { $expr: { $eq: ['$$offerId', '$offerId'] } } },
-            { $project: { _id: 1, rating: 1 } }
-          ],
-          as: 'comments'
-        }
-      },
-      {
-        $addFields: {
-          'favoriteOffers.commentsNumber': { $size: '$comments' },
-          'favoriteOffers.rating': { $avg: '$comments.rating' }
-        }
-      },
-      { $unset: 'comments' },
-      {
-        $group: {
-          _id: '$_id',
-          favoriteOffers: { $push: '$favoriteOffers' }
-        }
-      },
-      { $project: { favoriteOffers: 1, _id: 0 } }
-    ]).exec();
+    const user = await this.userModel.findById(userId).exec();
 
+    return user && user.favoriteOfferIds ? await this.offerService.findAllByIds(user.favoriteOfferIds) : [];
   }
 }
