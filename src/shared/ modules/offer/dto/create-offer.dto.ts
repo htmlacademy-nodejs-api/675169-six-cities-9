@@ -2,7 +2,7 @@ import { CityEnum, ComfortsEnum, HousingEnum } from '../../../enums/index.js';
 import { ComfortList } from '../../../types/index.js';
 import { IsArray, IsBoolean, IsEnum, IsInt, IsMongoId, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, IsNumber, IsLatitude, IsLongitude } from 'class-validator';
 import { CreateOfferValidationMessage } from '../index.js';
-import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, IMAGES_LENGTH, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../../constants/index.js';
+import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, IMAGES_LENGTH, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../../constants/index.js';
 
 
 export class CreateOfferDto {
@@ -39,18 +39,18 @@ export class CreateOfferDto {
     housingType: HousingEnum;
 
   @IsInt({ message: CreateOfferValidationMessage.roomsNumber.invalidFormat })
-  @Min(100, { message: CreateOfferValidationMessage.roomsNumber.minValue })
-  @Max(200000, { message: CreateOfferValidationMessage.roomsNumber.maxValue })
+  @Min(ROOMS_NUMBER_MIN, { message: CreateOfferValidationMessage.roomsNumber.minValue })
+  @Max(ROOMS_NUMBER_MAX, { message: CreateOfferValidationMessage.roomsNumber.maxValue })
     roomsNumber: number;
 
   @IsInt({ message: CreateOfferValidationMessage.guestsNumber.invalidFormat })
-  @Min(100, { message: CreateOfferValidationMessage.guestsNumber.minValue })
-  @Max(200000, { message: CreateOfferValidationMessage.guestsNumber.maxValue })
+  @Min(GUESTS_NUMBER_MIN, { message: CreateOfferValidationMessage.guestsNumber.minValue })
+  @Max(GUESTS_NUMBER_MAX, { message: CreateOfferValidationMessage.guestsNumber.maxValue })
     guestsNumber: number;
 
   @IsInt({ message: CreateOfferValidationMessage.rentPrice.invalidFormat })
-  @Min(100, { message: CreateOfferValidationMessage.rentPrice.minValue })
-  @Max(200000, { message: CreateOfferValidationMessage.rentPrice.maxValue })
+  @Min(RENT_PRICE_MIN, { message: CreateOfferValidationMessage.rentPrice.minValue })
+  @Max(RENT_PRICE_MAX, { message: CreateOfferValidationMessage.rentPrice.maxValue })
     rentPrice: number;
 
   // TODO: валидация на уникальность

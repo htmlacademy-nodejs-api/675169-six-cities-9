@@ -49,3 +49,6 @@ export const MAX_COMMENTS_NUMBER = 50;
 export const MAX_ITEMS_PER_PAGE = 60;
 
 export const IMAGES_LENGTH = 6;
+
+export const USER_NAME_MIN = 1;
+export const USER_NAME_MAX = 15;

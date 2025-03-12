@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BaseController, HttpError, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpError, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
-import { ChangeFavoriteRequest, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
+import { ChangeFavoriteRequest, CreateUserDto, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
 import { UserService } from './user-service.interface.js';
 import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/index.js';
@@ -24,7 +24,12 @@ export class UserController extends BaseController {
     this.logger.info('Register routes for UserController…');
 
     const routes = [
-      { path: '/register', method: HttpMethod.Post, handler: this.create },
+      {
+        path: '/register',
+        method: HttpMethod.Post,
+        handler: this.create,
+        middlewares: [new ValidateDtoMiddleware(CreateUserDto)]
+      },
       { path: '/login', method: HttpMethod.Post, handler: this.login },
       { path: '/logout', method: HttpMethod.Post, handler: this.logout },
       { path: '/status', method: HttpMethod.Get, handler: this.status },
