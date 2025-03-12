@@ -21,10 +21,10 @@ export class OfferController extends BaseController {
     const routes = [
       { path: '/', method: HttpMethod.Get, handler: this.index },
       { path: '/', method: HttpMethod.Post, handler: this.create },
-      { path: '/:offerId', method: HttpMethod.Get, handler: this.detailedItem },
-      { path: '/:offerId', method: HttpMethod.Put, handler: this.updateItem },
-      { path: '/:offerId', method: HttpMethod.Delete, handler: this.deleteItem },
-      { path: '/premium/:city', method: HttpMethod.Get, handler: this.premium}
+      { path: '/:offerId', method: HttpMethod.Get, handler: this.show },
+      { path: '/:offerId', method: HttpMethod.Put, handler: this.update },
+      { path: '/:offerId', method: HttpMethod.Delete, handler: this.delete },
+      { path: '/premium/:city', method: HttpMethod.Get, handler: this.indexPremium}
     ];
 
     this.addRoute(routes);
@@ -43,7 +43,7 @@ export class OfferController extends BaseController {
     this.created(res, fillDTO(OfferRdo, result));
   }
 
-  public async detailedItem({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
+  public async show({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     const offer = await this.offerService.findById(params.offerId);
 
     if (!offer) {
@@ -59,7 +59,7 @@ export class OfferController extends BaseController {
   }
 
 
-  public async updateItem({ params, body }: CreateOfferRequestParamOfferId, res: Response): Promise<void> {
+  public async update({ params, body }: CreateOfferRequestParamOfferId, res: Response): Promise<void> {
     const { offerId } = params;
 
     const offer = await this.offerService.findById(offerId);
@@ -78,7 +78,7 @@ export class OfferController extends BaseController {
     this.ok(res, responseData);
   }
 
-  public async deleteItem({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
+  public async delete({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     // TODO проверка на автора
     const offer = await this.offerService.findById(params.offerId);
 
@@ -95,7 +95,7 @@ export class OfferController extends BaseController {
     this.okNoContent(res);
   }
 
-  public async premium({ params }: Request<ParamCity>, res: Response): Promise<void> {
+  public async indexPremium({ params }: Request<ParamCity>, res: Response): Promise<void> {
     const offers = await this.offerService.findPremiumByCity(params.city);
     const responseData = fillDTO(OfferRdo, offers);
     this.ok(res, responseData);

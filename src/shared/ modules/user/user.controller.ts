@@ -28,14 +28,14 @@ export class UserController extends BaseController {
       { path: '/login', method: HttpMethod.Post, handler: this.login },
       { path: '/logout', method: HttpMethod.Post, handler: this.logout },
       { path: '/status', method: HttpMethod.Get, handler: this.status },
-      { path: '/favorites/:userId', method: HttpMethod.Get, handler: this.favorites },
-      { path: '/favorites', method: HttpMethod.Put, handler: this.changeFavorite },
+      { path: '/favorites/:userId', method: HttpMethod.Get, handler: this.indexFavorites },
+      { path: '/favorites', method: HttpMethod.Put, handler: this.update },
     ];
 
     this.addRoute(routes);
   }
 
-  public async changeFavorite({ body }: ChangeFavoriteRequest, res: Response): Promise<void> {
+  public async update({ body }: ChangeFavoriteRequest, res: Response): Promise<void> {
     const { userId, offerId, isAdding } = body;
 
     const user = await this.userService.findById(userId);
@@ -64,7 +64,7 @@ export class UserController extends BaseController {
     this.ok(res, responseData);
   }
 
-  public async favorites({ params }: Request<ParamUserId>, res: Response): Promise<void> {
+  public async indexFavorites({ params }: Request<ParamUserId>, res: Response): Promise<void> {
     const user = await this.userService.findById(params.userId);
 
     if (!user) {
