@@ -52,3 +52,6 @@ export const IMAGES_LENGTH = 6;
 
 export const USER_NAME_MIN = 1;
 export const USER_NAME_MAX = 15;
+
+export const COMMENT_LENGTH_MIN = 5;
+export const COMMENT_LENGTH_MAX = 1024;
