@@ -10,3 +10,4 @@ export * from './type/create-offer-request.type.js';
 export * from './type/param-offerid.type.js';
 export * from './type/param-city.type.js';
 export * from './type/create-offer-request.type-param-offerid.type.js';
+export * from './dto/create-offer.messages.js';

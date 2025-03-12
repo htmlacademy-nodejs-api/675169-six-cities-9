@@ -47,3 +47,5 @@ export const MAX_PREMIUM_NUMBER = 3;
 export const MAX_COMMENTS_NUMBER = 50;
 
 export const MAX_ITEMS_PER_PAGE = 60;
+
+export const IMAGES_LENGTH = 6;
