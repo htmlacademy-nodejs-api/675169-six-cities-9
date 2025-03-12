@@ -13,19 +13,15 @@ export class DefaultCommentService implements CommentService {
   ) {}
 
   public async create(dto: CreateCommentDto): Promise<DocumentType<CommentEntity>> {
-    const newComment = new CommentEntity(dto);
+    const newComment = await this.commentModel.create(dto);
+    this.logger.info(`New comment created at: ${newComment.createdAt}`);
 
-    const result = await this.commentModel.create(newComment);
-
-    this.logger.info(`New comment created at: ${result.createdAt}`);
-
-    return result;
+    return newComment;
   }
 
   // TODO do we need this?
   public async findAllByAuthorId(authorId: string): Promise<DocumentType<CommentEntity>[]> {
     return await this.commentModel.find({ author: authorId }).exec();
-
   }
 
   public async findAllByOfferId(offerId: string): Promise<DocumentType<CommentEntity>[]> {
@@ -35,6 +31,6 @@ export class DefaultCommentService implements CommentService {
   public async deleteAllByOfferId(offerId: string): Promise<void> {
     const result = await this.commentModel.deleteMany({ offerId }).exec();
 
-    this.logger.info(`${result.deletedCount} were deleted`);
+    this.logger.info(`${result.deletedCount} comments for offer with id ${offerId} were deleted`);
   }
 }
