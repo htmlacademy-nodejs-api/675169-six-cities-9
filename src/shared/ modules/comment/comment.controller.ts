@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, HttpError, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, HttpError, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { StatusCodes } from 'http-status-codes';
@@ -21,9 +21,19 @@ export class CommentController extends BaseController {
     this.logger.info('Register routes for OfferController…');
 
     const routes = [
-      { path: '/:offerId', method: HttpMethod.Get, handler: this.index },
+      {
+        path: '/:offerId',
+        method: HttpMethod.Get,
+        handler: this.index,
+        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      },
       { path: '/', method: HttpMethod.Post, handler: this.create },
-      { path: '/:offerId', method: HttpMethod.Delete, handler: this.delete },
+      {
+        path: '/:offerId',
+        method: HttpMethod.Delete,
+        handler: this.delete,
+        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      },
     ];
     this.addRoute(routes);
   }

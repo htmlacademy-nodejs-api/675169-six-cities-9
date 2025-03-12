@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BaseController, HttpError, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, HttpError, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { ChangeFavoriteRequest, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
@@ -28,7 +28,12 @@ export class UserController extends BaseController {
       { path: '/login', method: HttpMethod.Post, handler: this.login },
       { path: '/logout', method: HttpMethod.Post, handler: this.logout },
       { path: '/status', method: HttpMethod.Get, handler: this.status },
-      { path: '/favorites/:userId', method: HttpMethod.Get, handler: this.indexFavorites },
+      {
+        path: '/favorites/:userId',
+        method: HttpMethod.Get,
+        handler: this.indexFavorites,
+        middlewares: [new ValidateObjectIdMiddleware('userId')]
+      },
       { path: '/favorites', method: HttpMethod.Put, handler: this.update },
     ];
 

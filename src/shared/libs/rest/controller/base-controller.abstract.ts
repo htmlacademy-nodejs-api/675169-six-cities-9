@@ -27,7 +27,12 @@ export abstract class BaseController implements Controller {
 
     for (const routeItem of routes) {
       const wrapperAsyncHandler = asyncHandler(routeItem.handler.bind(this));
-      this._router[routeItem.method](routeItem.path, wrapperAsyncHandler);
+
+      const middlewareHandlers = routeItem.middlewares?.map((item) => asyncHandler(item.execute.bind(item)));
+      const allHandlers = middlewareHandlers ? [...middlewareHandlers, wrapperAsyncHandler] : wrapperAsyncHandler;
+
+      this._router[routeItem.method](routeItem.path, allHandlers);
+
       this.logger.info(`Route registered: ${routeItem.method.toUpperCase()} ${routeItem.path}`);
     }
   }

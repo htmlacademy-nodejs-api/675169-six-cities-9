@@ -7,3 +7,6 @@ export * from './types/request.params.type.js';
 export * from './exception-filter/exception-filter.interface.js';
 export * from './exception-filter/app-exception-filter.js';
 export * from './errors/index.js';
+export * from './middleware/middleware.interface.js';
+export * from './middleware/validate-objectid.middleware.js';
+export * from './middleware/validate-city.middleware.js';

@@ -1,12 +1,13 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, HttpError, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, HttpError, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { OfferService } from './offer-service.interface.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateOfferRequest, CreateOfferRequestParamOfferId, OfferRdo, ParamCity, ParamOfferId } from './index.js';
 import { StatusCodes } from 'http-status-codes';
+import { ValidateCityMiddleware } from '../../libs/rest/middleware/validate-city.middleware.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -21,10 +22,30 @@ export class OfferController extends BaseController {
     const routes = [
       { path: '/', method: HttpMethod.Get, handler: this.index },
       { path: '/', method: HttpMethod.Post, handler: this.create },
-      { path: '/:offerId', method: HttpMethod.Get, handler: this.show },
-      { path: '/:offerId', method: HttpMethod.Put, handler: this.update },
-      { path: '/:offerId', method: HttpMethod.Delete, handler: this.delete },
-      { path: '/premium/:city', method: HttpMethod.Get, handler: this.indexPremium}
+      {
+        path: '/:offerId',
+        method: HttpMethod.Get,
+        handler: this.show,
+        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      },
+      {
+        path: '/:offerId',
+        method: HttpMethod.Put,
+        handler: this.update,
+        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      },
+      {
+        path: '/:offerId',
+        method: HttpMethod.Delete,
+        handler: this.delete,
+        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+      },
+      {
+        path: '/premium/:city',
+        method: HttpMethod.Get,
+        handler: this.indexPremium,
+        middlewares: [new ValidateCityMiddleware('city')]
+      }
     ];
 
     this.addRoute(routes);
