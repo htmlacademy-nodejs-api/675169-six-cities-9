@@ -4,13 +4,13 @@ import { StatusCodes } from 'http-status-codes';
 import { BaseController, HttpError, HttpMethod } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
-import { ChangeFavoriteRequest, CreateUserRequest } from './index.js';
+import { ChangeFavoriteRequest, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
 import { UserService } from './user-service.interface.js';
 import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/index.js';
 import { UserRdo } from './rdo/user.rdo.js';
-import { LoginUserRequest } from './login-user-request.type.js';
 import { OfferRdo, OfferService } from '../offer/index.js';
+
 
 @injectable()
 export class UserController extends BaseController {
@@ -64,7 +64,7 @@ export class UserController extends BaseController {
     this.ok(res, responseData);
   }
 
-  public async favorites({ params }: Request, res: Response): Promise<void> {
+  public async favorites({ params }: Request<ParamUserId>, res: Response): Promise<void> {
     const user = await this.userService.findById(params.userId);
 
     if (!user) {

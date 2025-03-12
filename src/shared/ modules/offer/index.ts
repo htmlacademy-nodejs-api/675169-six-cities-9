@@ -6,4 +6,7 @@ export * from './offer.container.js';
 export * from './offer-service.interface.js';
 export * from './offer.controller.js';
 export * from './rdo/offer.rdo.js';
-export * from './create-offer-request.type.js';
+export * from './type/create-offer-request.type.js';
+export * from './type/param-offerid.type.js';
+export * from './type/param-city.type.js';
+export * from './type/create-offer-request.type-param-offerid.type.js';

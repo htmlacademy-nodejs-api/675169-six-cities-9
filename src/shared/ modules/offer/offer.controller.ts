@@ -5,7 +5,7 @@ import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { OfferService } from './offer-service.interface.js';
 import { fillDTO } from '../../helpers/index.js';
-import { CreateOfferRequest, OfferRdo } from './index.js';
+import { CreateOfferRequest, CreateOfferRequestParamOfferId, OfferRdo, ParamCity, ParamOfferId } from './index.js';
 import { StatusCodes } from 'http-status-codes';
 
 @injectable()
@@ -38,16 +38,12 @@ export class OfferController extends BaseController {
     this.ok(res, responseData);
   }
 
-  public async create(
-    { body }: CreateOfferRequest,
-    res: Response
-  ): Promise<void> {
-
+  public async create({ body }: CreateOfferRequest, res: Response): Promise<void> {
     const result = await this.offerService.create(body);
     this.created(res, fillDTO(OfferRdo, result));
   }
 
-  public async detailedItem({ params }: Request, res: Response): Promise<void> {
+  public async detailedItem({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     const offer = await this.offerService.findById(params.offerId);
 
     if (!offer) {
@@ -63,9 +59,8 @@ export class OfferController extends BaseController {
   }
 
 
-  public async updateItem(req: Request, res: Response): Promise<void> {
-    const { offerId } = req.params;
-    const body = req.body;
+  public async updateItem({ params, body }: CreateOfferRequestParamOfferId, res: Response): Promise<void> {
+    const { offerId } = params;
 
     const offer = await this.offerService.findById(offerId);
 
@@ -83,7 +78,7 @@ export class OfferController extends BaseController {
     this.ok(res, responseData);
   }
 
-  public async deleteItem({ params }: Request, res: Response): Promise<void> {
+  public async deleteItem({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     // TODO проверка на автора
     const offer = await this.offerService.findById(params.offerId);
 
@@ -100,7 +95,7 @@ export class OfferController extends BaseController {
     this.okNoContent(res);
   }
 
-  public async premium({ params }: Request, res: Response): Promise<void> {
+  public async premium({ params }: Request<ParamCity>, res: Response): Promise<void> {
     const offers = await this.offerService.findPremiumByCity(params.city);
     const responseData = fillDTO(OfferRdo, offers);
     this.ok(res, responseData);

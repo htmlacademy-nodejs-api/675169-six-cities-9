@@ -8,6 +8,7 @@ import { CommentService } from './comment-service.interface.js';
 import { CommentRdo } from './rdo/comment.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateCommentRequest } from './create-comment-request.type.js';
+import { ParamOfferId } from '../offer/index.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -32,7 +33,7 @@ export class CommentController extends BaseController {
     this.created(res, fillDTO(CommentRdo, comment));
   }
 
-  public async index({ params }: Request, res: Response): Promise<void> {
+  public async index({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     const comments = await this.commentService.findAllByOfferId(params.offerId);
 
     if (!comments) {
@@ -47,7 +48,7 @@ export class CommentController extends BaseController {
     this.ok(res, responseData);
   }
 
-  public async delete({ params }: Request, res: Response): Promise<void> {
+  public async delete({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     const deleted = await this.commentService.deleteAllByOfferId(params.offerId);
 
     this.noContent(res, deleted);
