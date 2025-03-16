@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpError, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpError, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { ChangeFavoriteRequest, CreateUserDto, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
@@ -60,6 +60,16 @@ export class UserController extends BaseController {
           new DocumentExistsMiddleware(this.userService, 'User', 'userId')
         ]
       },
+      {
+        path: '/:userId/avatar',
+        method: HttpMethod.Post,
+        handler: this.uploadAvatar,
+        middlewares: [
+          new ValidateObjectIdMiddleware('userId'),
+          new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+          new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        ]
+      }
     ];
 
     this.addRoute(routes);
@@ -122,5 +132,11 @@ export class UserController extends BaseController {
   ): Promise<void> {
     const result = await this.userService.create(body, this.configService.get('SALT'));
     this.created(res, fillDTO(UserRdo, result));
+  }
+
+  public async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }
