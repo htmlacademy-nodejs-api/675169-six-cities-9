@@ -10,4 +10,5 @@ export * from './type/change-favorite-request.type.js';
 export * from './type/param-userid.type.js';
 export * from './type/login-user-request.type.js';
 export * from './type/create-user-request.type.js';
-export * from './dto/create-user.messages.js';
+export * from './type/param-userid-offerid.type.js';
+export * from './type/edit-offer-request.type.js';

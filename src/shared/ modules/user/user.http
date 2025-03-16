@@ -5,7 +5,7 @@ POST http://localhost:4000/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "torans@overlook.net",
+  "email": "random6@email.com",
   "name": "Jack",
   "password": "password",
   "isPro": false,
@@ -21,7 +21,7 @@ POST http://localhost:4000/users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "random6@email.com",
+  "email": "random6111@email.com",
   "password": "4a83854cf6f0112b4295bddd535a9b3fbe54a3f90e853b59d42e4bed553c55a4"
 }
 
@@ -38,14 +38,10 @@ Content-Type: application/json
 # Пользователи
 ## Добавить объявление в избранное
 
-PUT http://localhost:4000/users/favorites HTTP/1.1
+PUT http://localhost:4000/users/favorites/67cc7a6b9184292994085e52/offers/67cddf3ff4d66b3437c85154 HTTP/1.1
 Content-Type: application/json
 
-{
-  "userId": "67cc7a6b9184292994085e52",
-  "offerId": "67cddb4ec4cd96be1eb163cb",
-  "isAdding": true
-}
+{ "isAdding": true }
 
 ###
 
@@ -53,13 +49,9 @@ Content-Type: application/json
 # Пользователи
 ## Удалить объявление из избранного
 
-PUT http://localhost:4000/users/favorites HTTP/1.1
+PUT http://localhost:4000/users/favorites/67cc7a6b9184292994085e52/offers/67cddf3ff4d66b3437c85154 HTTP/1.1
 Content-Type: application/json
 
-{
-  "userId": "67cc7a6b9184292994085e52",
-  "offerId": "67cddb4ec4cd96be1eb163cb",
-  "isAdding": false
-}
+{ "isAdding": false }
 
 ###

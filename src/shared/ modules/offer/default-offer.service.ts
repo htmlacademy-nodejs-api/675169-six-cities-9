@@ -15,6 +15,18 @@ export class DefaultOfferService implements OfferService {
     @inject(Component.OfferModel) private readonly offerModel: types.ModelType<OfferEntity>,
   ) {}
 
+  public async exists(offerId: string): Promise<boolean> {
+    return (await this.offerModel
+      .exists({_id: offerId})) !== null;
+  }
+
+  public async isOfferAuthor(userId: string, offerId: string): Promise<boolean> {
+    const offer = await this.offerModel.findById(offerId);
+    const populatedOffer = await offer?.populate('userId');
+
+    return populatedOffer?.userId._id.toString() === userId;
+  }
+
   private readonly aggregateArray = [
     {
       $lookup: {

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { RequestBody, RequestParams } from '../../../types/index.js';
-import { ChangeFavoriteDto } from '../index.js';
+import { RequestBody } from '../../../types/index.js';
+import { ChangeFavoriteDto, ParamUserIdOfferId } from '../index.js';
 
-export type ChangeFavoriteRequest = Request<RequestParams, RequestBody, ChangeFavoriteDto>;
+export type ChangeFavoriteRequest = Request<ParamUserIdOfferId, RequestBody, ChangeFavoriteDto>;

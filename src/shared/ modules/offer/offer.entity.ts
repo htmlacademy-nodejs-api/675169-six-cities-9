@@ -36,7 +36,6 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   })
   public preview: string;
 
-  // TODO max length 6
   @prop({
     required: true,
     type: () => [String],

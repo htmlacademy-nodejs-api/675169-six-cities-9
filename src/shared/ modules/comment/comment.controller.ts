@@ -1,38 +1,50 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, HttpError, HttpMethod, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
-import { StatusCodes } from 'http-status-codes';
 import { CommentService } from './comment-service.interface.js';
 import { CommentRdo } from './rdo/comment.rdo.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateCommentRequest } from './create-comment-request.type.js';
-import { ParamOfferId } from '../offer/index.js';
+import { OfferService, ParamOfferId } from '../offer/index.js';
+import { CreateCommentDto } from './dto/create-comment.dto.js';
 
 @injectable()
 export class CommentController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
+    @inject(Component.OfferService) private readonly offerService: OfferService,
   ) {
     super(logger);
 
-    this.logger.info('Register routes for OfferController…');
+    this.logger.info('Register routes for CommentController..');
 
     const routes = [
       {
         path: '/:offerId',
         method: HttpMethod.Get,
         handler: this.index,
-        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+        middlewares: [
+          new ValidateObjectIdMiddleware('offerId'),
+          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+        ]
       },
-      { path: '/', method: HttpMethod.Post, handler: this.create },
+      {
+        path: '/',
+        method: HttpMethod.Post,
+        handler: this.create,
+        middlewares: [new ValidateDtoMiddleware(CreateCommentDto)]
+      },
       {
         path: '/:offerId',
         method: HttpMethod.Delete,
         handler: this.delete,
-        middlewares: [new ValidateObjectIdMiddleware('offerId')]
+        middlewares: [
+          new ValidateObjectIdMiddleware('offerId'),
+          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+        ]
       },
     ];
     this.addRoute(routes);
@@ -45,15 +57,6 @@ export class CommentController extends BaseController {
 
   public async index({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     const comments = await this.commentService.findAllByOfferId(params.offerId);
-
-    if (!comments) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${params.offerId} does not have comments.`,
-        'CommentController',
-      );
-    }
-
     const responseData = fillDTO(CommentRdo, comments);
     this.ok(res, responseData);
   }

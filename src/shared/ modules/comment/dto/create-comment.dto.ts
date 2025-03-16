@@ -1,6 +1,6 @@
 import { IsInt, IsMongoId, IsString, Length, Max, Min } from 'class-validator';
-import { CreateCommentValidationMessages } from '../index.js';
 import { COMMENT_LENGTH_MAX, COMMENT_LENGTH_MIN, RATING_MAX, RATING_MIN } from '../../../constants/index.js';
+import { CreateCommentValidationMessages } from './create-comment.messages.js';
 
 
 export class CreateCommentDto {
