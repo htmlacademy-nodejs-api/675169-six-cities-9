@@ -3,14 +3,14 @@ import { getErrorMessage } from '../../shared/helpers/common.js';
 import { Offer } from '../../shared/types/index.js';
 import { Command } from './command.interface.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
-import { DefaultOfferService, OfferModel, OfferService } from '../../shared/ modules/offer/index.js';
+import { DefaultOfferService, OfferModel, OfferService } from '../../shared/modules/offer/index.js';
 import { DatabaseClient } from '../../shared/libs/database-client/database-client.interface.js';
 
 import { ConsoleLogger, Logger } from '../../shared/libs/logger/index.js';
 import { MongoDatabaseClient } from '../../shared/libs/database-client/mongo.database-client.js';
 
-import { UserModel } from '../../shared/ modules/user/user.entity.js';
-import { DefaultUserService, UserService } from '../../shared/ modules/user/index.js';
+import { UserModel } from '../../shared/modules/user/user.entity.js';
+import { DefaultUserService, UserService } from '../../shared/modules/user/index.js';
 import { DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD } from './command.constant.js';
 import { getMongoURI } from '../../shared/helpers/index.js';
 
