@@ -1,11 +1,11 @@
 import { CityEnum, ComfortsEnum, HousingEnum } from '../../../enums/index.js';
 import { ComfortList } from '../../../types/index.js';
-import { IsArray, IsBoolean, IsEnum, IsInt, IsMongoId, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, IsNumber, IsLatitude, IsLongitude } from 'class-validator';
+import { IsArray, IsBoolean, IsEnum, IsInt, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, IsNumber, IsLatitude, IsLongitude } from 'class-validator';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, IMAGES_LENGTH, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../../constants/index.js';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 
 
-export class CreateOfferDto {
+export class EditOfferDto {
   @IsString()
   @MinLength(TITLE_MIN_LENGTH, { message: CreateOfferValidationMessage.title.minLength })
   @MaxLength(TITLE_MAX_LENGTH, { message: CreateOfferValidationMessage.title.maxLength })
@@ -68,7 +68,4 @@ export class CreateOfferDto {
   @IsLatitude({ message: CreateOfferValidationMessage.coordinates.invalidLatitude })
   @IsLongitude({ message: CreateOfferValidationMessage.coordinates.invalidLongitude })
     coordinates: number[];
-
-  @IsMongoId({ message: CreateOfferValidationMessage.userId.invalidId })
-    userId: string;
 }

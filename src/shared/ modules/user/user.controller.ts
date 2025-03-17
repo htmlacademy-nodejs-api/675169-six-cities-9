@@ -1,15 +1,14 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { BaseController, HttpError, HttpMethod } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpError, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
-import { ChangeFavoriteRequest, CreateUserRequest } from './index.js';
+import { ChangeFavoriteRequest, CreateUserDto, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
 import { UserService } from './user-service.interface.js';
 import { Config, RestSchema } from '../../libs/config/index.js';
 import { fillDTO } from '../../helpers/index.js';
 import { UserRdo } from './rdo/user.rdo.js';
-import { LoginUserRequest } from './login-user-request.type.js';
 import { OfferRdo, OfferService } from '../offer/index.js';
 
 @injectable()
@@ -24,56 +23,68 @@ export class UserController extends BaseController {
     this.logger.info('Register routes for UserController…');
 
     const routes = [
-      { path: '/register', method: HttpMethod.Post, handler: this.create },
-      { path: '/login', method: HttpMethod.Post, handler: this.login },
+      {
+        path: '/register',
+        method: HttpMethod.Post,
+        handler: this.create,
+        middlewares: [
+          new UniqueEmailMiddleware(this.userService, 'User', 'email', false),
+          new ValidateDtoMiddleware(CreateUserDto),
+        ]
+      },
+      {
+        path: '/login',
+        method: HttpMethod.Post,
+        handler: this.login,
+        middlewares: [
+          new UniqueEmailMiddleware(this.userService, 'User', 'email', true),
+        ]
+      },
       { path: '/logout', method: HttpMethod.Post, handler: this.logout },
       { path: '/status', method: HttpMethod.Get, handler: this.status },
-      { path: '/favorites/:userId', method: HttpMethod.Get, handler: this.favorites },
-      { path: '/favorites', method: HttpMethod.Put, handler: this.changeFavorite },
+      {
+        path: '/favorites/:userId',
+        method: HttpMethod.Get,
+        handler: this.indexFavorites,
+        middlewares: [
+          new ValidateObjectIdMiddleware('userId'),
+        ]
+      },
+      {
+        path: '/favorites/:userId/offers/:offerId',
+        method: HttpMethod.Put,
+        handler: this.update,
+        middlewares: [
+          new ValidateObjectIdMiddleware('userId'),
+          new ValidateObjectIdMiddleware('offerId'),
+          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+          new DocumentExistsMiddleware(this.userService, 'User', 'userId')
+        ]
+      },
+      {
+        path: '/:userId/avatar',
+        method: HttpMethod.Post,
+        handler: this.uploadAvatar,
+        middlewares: [
+          new ValidateObjectIdMiddleware('userId'),
+          new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+          new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
+        ]
+      }
     ];
 
     this.addRoute(routes);
   }
 
-  public async changeFavorite({ body }: ChangeFavoriteRequest, res: Response): Promise<void> {
-    const { userId, offerId, isAdding } = body;
+  public async update({ body, params }: ChangeFavoriteRequest, res: Response): Promise<void> {
+    const { isAdding } = body;
 
-    const user = await this.userService.findById(userId);
-
-    if (!user) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `User with id ${userId} not found.`,
-        'UserController',
-      );
-    }
-
-    const offer = await this.offerService.findById(offerId);
-
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${offerId} not found.`,
-        'UserController',
-      );
-    }
-
-    const updatedUser = await this.userService.addToOrRemoveFromFavoritesById(userId, offerId, isAdding);
-
+    const updatedUser = await this.userService.addToOrRemoveFromFavoritesById(params.userId, params.offerId, isAdding);
     const responseData = fillDTO(UserRdo, updatedUser);
     this.ok(res, responseData);
   }
 
-  public async favorites({ params }: Request, res: Response): Promise<void> {
-    const user = await this.userService.findById(params.userId);
-
-    if (!user) {
-      throw new HttpError(
-        StatusCodes.UNAUTHORIZED,
-        `User with id ${params.userId} not found.`,
-        'UserController',
-      );
-    }
+  public async indexFavorites({ params }: Request<ParamUserId>, res: Response): Promise<void> {
     const offers = await this.userService.getAllFavorites(params.userId);
 
     const responseData = fillDTO(OfferRdo, offers);
@@ -81,23 +92,14 @@ export class UserController extends BaseController {
   }
 
   public async login(
-    { body }: LoginUserRequest,
+    _req: LoginUserRequest,
     res: Response,
   ): Promise<void> {
-    const user = await this.userService.findByEmail(body.email);
-
-    if (!user) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `User with email ${body.email} was not found.`,
-        'UserController',
-      );
-    }
-
     this.okNoContent(res);
   }
 
   public async status({ body }: LoginUserRequest, res: Response) {
+    // TODO: Проверка состояния пользователя или не надо?
     const user = await this.userService.findByEmail(body.email);
 
     if (!user) {
@@ -107,15 +109,13 @@ export class UserController extends BaseController {
         'UserController',
       );
     }
-
-    // TODO: Проверка состояния пользователя или не надо?
 
     this.okNoContent(res);
   }
 
   public async logout({ body }: LoginUserRequest, res: Response): Promise<void> {
+    // TODO: Выход из авторизированного режима
     const user = await this.userService.findByEmail(body.email);
-
     if (!user) {
       throw new HttpError(
         StatusCodes.NOT_FOUND,
@@ -131,17 +131,13 @@ export class UserController extends BaseController {
     { body }: CreateUserRequest,
     res: Response,
   ): Promise<void> {
-    const user = await this.userService.findByEmail(body.email);
-
-    if (user) {
-      throw new HttpError(
-        StatusCodes.CONFLICT,
-        `User with email «${body.email}» exists.`,
-        'UserController'
-      );
-    }
-
     const result = await this.userService.create(body, this.configService.get('SALT'));
     this.created(res, fillDTO(UserRdo, result));
+  }
+
+  public async uploadAvatar(req: Request, res: Response) {
+    this.created(res, {
+      filepath: req.file?.path
+    });
   }
 }

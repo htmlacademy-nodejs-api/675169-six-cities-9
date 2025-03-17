@@ -33,13 +33,6 @@ export class CommentEntity extends defaultClasses.TimeStamps implements Comment 
     ref: OfferEntity
   })
   public offerId: Ref<OfferEntity>;
-
-  constructor(commentData: Comment) {
-    super();
-
-    this.text = commentData.text;
-    this.rating = commentData.rating;
-  }
 }
 
 export const CommentModel = getModelForClass(CommentEntity);

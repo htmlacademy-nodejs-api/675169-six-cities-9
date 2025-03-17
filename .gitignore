@@ -13,3 +13,5 @@ coverage
 mocks/new-mocks.tsv
 
 .env
+
+/upload/

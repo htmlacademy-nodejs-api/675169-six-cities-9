@@ -14,6 +14,16 @@ export class DefaultUserService implements UserService {
     @inject(Component.OfferService) private readonly offerService: OfferService,
   ) {}
 
+  public async exists(userId: string): Promise<boolean> {
+    const user = this.userModel.exists({_id: userId});
+    return Boolean(user);
+  }
+
+  public async emailExists(email: string): Promise<boolean> {
+    const user = await this.findByEmail(email);
+    return Boolean(user);
+  }
+
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const user = new UserEntity(dto);
     user.setPassword(dto.password, salt);
