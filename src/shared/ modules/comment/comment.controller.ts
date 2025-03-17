@@ -21,15 +21,17 @@ export class CommentController extends BaseController {
 
     this.logger.info('Register routes for CommentController..');
 
+    const middlewares = [
+      new ValidateObjectIdMiddleware('offerId'),
+      new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
+    ];
+
     const routes = [
       {
         path: '/:offerId',
         method: HttpMethod.Get,
         handler: this.index,
-        middlewares: [
-          new ValidateObjectIdMiddleware('offerId'),
-          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId')
-        ]
+        middlewares
       },
       {
         path: '/',
@@ -41,10 +43,7 @@ export class CommentController extends BaseController {
         path: '/:offerId',
         method: HttpMethod.Delete,
         handler: this.delete,
-        middlewares: [
-          new ValidateObjectIdMiddleware('offerId'),
-          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-        ]
+        middlewares
       },
     ];
     this.addRoute(routes);

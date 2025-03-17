@@ -11,7 +11,6 @@ import { fillDTO } from '../../helpers/index.js';
 import { UserRdo } from './rdo/user.rdo.js';
 import { OfferRdo, OfferService } from '../offer/index.js';
 
-
 @injectable()
 export class UserController extends BaseController {
   constructor(
@@ -56,6 +55,8 @@ export class UserController extends BaseController {
         method: HttpMethod.Put,
         handler: this.update,
         middlewares: [
+          new ValidateObjectIdMiddleware('userId'),
+          new ValidateObjectIdMiddleware('offerId'),
           new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
           new DocumentExistsMiddleware(this.userService, 'User', 'userId')
         ]

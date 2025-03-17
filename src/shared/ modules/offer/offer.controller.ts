@@ -20,6 +20,14 @@ export class OfferController extends BaseController {
 
     this.logger.info('Register routes for OfferController…');
 
+    const middlewares = [
+      new ValidateObjectIdMiddleware('offerId'),
+      new ValidateObjectIdMiddleware('userId'),
+      new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
+      new AuthorMiddleware(this.offerService, 'Offer', 'userId', 'offerId'),
+    ];
+
     const routes = [
       {
         path: '/',
@@ -47,12 +55,7 @@ export class OfferController extends BaseController {
         path: '/:offerId/users/:userId',
         method: HttpMethod.Put,
         handler: this.update,
-        middlewares: [
-          new ValidateObjectIdMiddleware('offerId'),
-          new ValidateObjectIdMiddleware('userId'),
-          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-          new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
-          new AuthorMiddleware(this.offerService, 'Offer', 'userId', 'offerId'),
+        middlewares: [...middlewares,
           new ValidateDtoMiddleware(CreateOfferDto),
         ]
       },
@@ -60,13 +63,7 @@ export class OfferController extends BaseController {
         path: '/:offerId/users/:userId',
         method: HttpMethod.Delete,
         handler: this.delete,
-        middlewares: [
-          new ValidateObjectIdMiddleware('offerId'),
-          new ValidateObjectIdMiddleware('userId'),
-          new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-          new DocumentExistsMiddleware(this.userService, 'User', 'userId'),
-          new AuthorMiddleware(this.offerService, 'Offer', 'userId', 'offerId'),
-        ]
+        middlewares
       },
       {
         path: '/premium/:city',
