@@ -8,6 +8,8 @@ Content-Type: application/json
 
 ## Добавить новое предложение по аренде
 POST http://localhost:4000/offers HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZDllYTA1Y2ExZTVmMmRhMWY0MzY0YyIsImlhdCI6MTc0MjMzNDkwNSwiZXhwIjoxNzQyNTA3NzA1fQ.SXFEm9sqBIXb3DSg6IiA3hR08NivgnRhV0Bj_lT7_ik
+
 Content-Type: application/json
 
 {
@@ -16,7 +18,7 @@ Content-Type: application/json
   "city": "Paris",
   "preview": "shining.jpg",
   "images": [
-    "category-book.jpg,category-disk.jpg,category-home.jpg,category-games.jpg,category-entertainment.jpg,category-films.jpg"
+    "category-book.jpg","category-disk.jpg","category-home.jpg","category-games.jpg","category-entertainment.jpg","category-films.jpg"
   ],
   "premium": true,
   "housingType": "Apartment",
@@ -26,11 +28,8 @@ Content-Type: application/json
   "comforts": [
     "Towels"
   ],
-  "coordinates": [
-    12.7,
-    -40.1
-  ],
-  "userId": "67cc6fa58b5ca7d906c2138b",
+  "coordinates": { "latitude": 12.7, "longitude": -40.1 },
+  "userId": "67d9ea05ca1e5f2da1f4364c",
   "createdAt": "2025-03-08T16:01:55.531Z",
   "commentsNumber": 0,
   "rating": null,

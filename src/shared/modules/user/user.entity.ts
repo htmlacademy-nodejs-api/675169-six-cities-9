@@ -36,8 +36,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
     this.name = userData.name;
     this.email = userData.email;
-
-    this.image = userData.image;
+    this.image = userData.image as string;
   }
 
   public setPassword(password: string, salt: string) {

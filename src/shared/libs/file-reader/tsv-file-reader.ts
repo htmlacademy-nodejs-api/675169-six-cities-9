@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 import { FileReader } from './file-reader.interface.js';
-import { CityEnum, HousingEnum } from '../../enums/index.js';
-import { ComfortList, ComfortType, Coordinate, User } from '../../types/index.js';
+import { CityEnum, ComfortsEnum, HousingEnum } from '../../enums/index.js';
+import { Coordinate, User } from '../../types/index.js';
 import { NEWLINE, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
 import { createReadStream } from 'node:fs';
 import { Offer } from '../../types/offer.type.js';
@@ -57,11 +57,10 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return booleanSting.toLowerCase() === 'true';
   }
 
-  private parseComforts(comfortsString: string): ComfortList {
+  private parseComforts(comfortsString: string): ComfortsEnum[] {
     const items = comfortsString.split(SEMICOLON).map((item) => item.trim());
 
-    const validItems: ComfortType[] = items as ComfortType[];
-    return validItems as unknown as ComfortList;
+    return items as unknown as ComfortsEnum[];
   }
 
   private parseCoordintates(coordintatesString: string): Coordinate {

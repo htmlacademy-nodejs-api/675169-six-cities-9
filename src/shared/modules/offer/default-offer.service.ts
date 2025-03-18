@@ -2,7 +2,7 @@ import { DocumentType, types } from '@typegoose/typegoose';
 import { inject, injectable } from 'inversify';
 import { FullOffer } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
-import { OfferService, CreateOfferDto } from './index.js';
+import { OfferService, CreateOfferDto, EditOfferDto } from './index.js';
 import { MAX_ITEMS_PER_PAGE, MAX_PREMIUM_NUMBER } from '../../constants/index.js';
 import { Component, SortType } from '../../enums/index.js';
 import { OfferEntity } from './offer.entity.js';
@@ -22,9 +22,13 @@ export class DefaultOfferService implements OfferService {
 
   public async isOfferAuthor(userId: string, offerId: string): Promise<boolean> {
     const offer = await this.offerModel.findById(offerId);
-    const populatedOffer = await offer?.populate('userId');
 
-    return populatedOffer?.userId._id.toString() === userId;
+    if (!offer) {
+      return false;
+    }
+
+    const populatedOffer = await offer.populate('userId');
+    return populatedOffer.userId._id.toString() === userId;
   }
 
   private readonly aggregateArray = [
@@ -106,7 +110,7 @@ export class DefaultOfferService implements OfferService {
     ]).then((results) => results[0] || null);
   }
 
-  public async updateById(offerId: string, dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+  public async updateById(offerId: string, dto: EditOfferDto): Promise<DocumentType<OfferEntity> | null> {
     const result = await this.offerModel.findByIdAndUpdate(offerId, dto, {new: true}).exec();
 
     this.logger.info(`The offer was updateded: ${dto.title}`);
