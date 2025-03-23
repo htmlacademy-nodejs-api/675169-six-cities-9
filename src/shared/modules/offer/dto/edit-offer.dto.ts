@@ -1,9 +1,10 @@
 import { CityEnum, ComfortsEnum, HousingEnum } from '../../../enums/index.js';
-import { ComfortList } from '../../../types/index.js';
-import { IsArray, IsBoolean, IsEnum, IsInt, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, IsNumber, IsLatitude, IsLongitude, IsOptional } from 'class-validator';
+import { ComfortList, Coordinate } from '../../../types/index.js';
+import { IsArray, IsBoolean, IsEnum, IsInt, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, IsOptional, ValidateNested } from 'class-validator';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, IMAGES_LENGTH, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../../constants/index.js';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
-
+import { Type } from 'class-transformer';
+import { CoordinatesDto } from '../index.js';
 
 export class EditOfferDto {
   @IsOptional()
@@ -70,13 +71,8 @@ export class EditOfferDto {
   @IsEnum(ComfortsEnum, { each: true, message: CreateOfferValidationMessage.comforts.invalidItemFormat })
     comforts?: ComfortList;
 
-  // TODO: не проходит валидация координат в offer.http
   @IsOptional()
-  @IsArray({ message: CreateOfferValidationMessage.coordinates.invalidFormat })
-  @ArrayMinSize(2, { message: CreateOfferValidationMessage.coordinates.invalidLength })
-  @ArrayMaxSize(2, { message: CreateOfferValidationMessage.coordinates.invalidLength })
-  @IsNumber({}, { each: true, message: CreateOfferValidationMessage.coordinates.invalidItemFormat })
-  @IsLatitude({ message: CreateOfferValidationMessage.coordinates.invalidLatitude })
-  @IsLongitude({ message: CreateOfferValidationMessage.coordinates.invalidLongitude })
-    coordinates?: number[];
+  @ValidateNested({ message: CreateOfferValidationMessage.coordinates.invalidItemFormat})
+  @Type(() => CoordinatesDto)
+    coordinates?: Coordinate;
 }
