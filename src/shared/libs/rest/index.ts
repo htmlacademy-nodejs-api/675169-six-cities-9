@@ -17,3 +17,4 @@ export * from './middleware/upload-file.middleware.js';
 export * from './middleware/parse-token.middleware.js';
 export * from './middleware/private-route.middleware.js';
 export * from './middleware/authorisation.middleware.js';
+export * from './middleware/author.middleware.js';

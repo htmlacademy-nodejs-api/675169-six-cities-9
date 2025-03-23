@@ -9,12 +9,11 @@ export class AuthorMiddleware implements Middleware {
   constructor(
     private readonly service: IsAuthor,
     private readonly entityName: string,
-    private readonly paramUserId: string,
     private readonly paramOfferId: string,
   ) {}
 
-  public async execute({ params }: Request, _res: Response, next: NextFunction): Promise<void> {
-    const userId = params[this.paramUserId];
+  public async execute({ params, tokenPayload }: Request, _res: Response, next: NextFunction): Promise<void> {
+    const userId = tokenPayload.id;
     const offerId = params[this.paramOfferId];
 
     const isAuthor = await this.service.isOfferAuthor(userId, offerId);
