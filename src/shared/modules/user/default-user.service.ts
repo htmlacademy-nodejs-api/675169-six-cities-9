@@ -56,10 +56,14 @@ export class DefaultUserService implements UserService {
     return this.create(dto, salt);
   }
 
-  public async addToOrRemoveFromFavoritesById(userId: string, offerId: string, isAdding: boolean = true): Promise<DocumentType<UserEntity> | null> {
+  public async addToOrRemoveFromFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+    const user = await this.userModel.findById(userId);
+    const hasOfferId = user?.favoriteOfferIds?.includes(offerId);
+
+    this.logger.info(`User with id ${userId} ${!hasOfferId ? 'added' : 'removed'} offer with id ${offerId} from favorites`);
     return await this.userModel.findByIdAndUpdate(
       userId,
-      isAdding ? { $addToSet: { favoriteOfferIds: offerId } } : { $pull: { favoriteOfferIds: offerId } },
+      !hasOfferId ? { $addToSet: { favoriteOfferIds: offerId } } : { $pull: { favoriteOfferIds: offerId } },
       { new: true }
     ).exec();
   }
@@ -67,6 +71,6 @@ export class DefaultUserService implements UserService {
   public async getAllFavorites(userId: string): Promise<DocumentType<FullOffer>[]> {
     const user = await this.userModel.findById(userId).exec();
 
-    return user && user.favoriteOfferIds ? await this.offerService.findAllByIds(user.favoriteOfferIds) : [];
+    return user && user.favoriteOfferIds ? await this.offerService.findAllByIds(userId, user.favoriteOfferIds) : [];
   }
 }
