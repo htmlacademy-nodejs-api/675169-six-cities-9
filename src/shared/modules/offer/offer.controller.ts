@@ -85,25 +85,22 @@ export class OfferController extends BaseController {
 
   }
 
-  public async index({ tokenPayload }: Request, res: Response): Promise<void> {
-    const userId = tokenPayload ? tokenPayload.id : null;
-    const offers = await this.offerService.find(userId);
+  public async index({ tokenPayload: { id } }: Request, res: Response): Promise<void> {
+    const offers = await this.offerService.find(id ?? null);
 
     const responseData = fillDTO(OfferRdo, offers);
     this.ok(res, responseData);
   }
 
   public async create({ body, tokenPayload }: CreateOfferRequest, res: Response): Promise<void> {
-    const comforts = [...new Set(body.comforts)];
+    const comforts = [...new Set(body.comforts)].sort();
     const result = await this.offerService.create({ ...body, userId: tokenPayload.id, comforts });
 
     this.created(res, fillDTO(OfferRdo, result));
   }
 
-  public async show({ params, tokenPayload }: Request<ParamOfferId>, res: Response): Promise<void> {
-    const userId = tokenPayload ? tokenPayload.id : null;
-
-    const offer = await this.offerService.findById(userId, params.offerId);
+  public async show({ params, tokenPayload: { id } }: Request<ParamOfferId>, res: Response): Promise<void> {
+    const offer = await this.offerService.findById((id ?? null), params.offerId);
     const responseData = fillDTO(OfferRdo, offer);
     this.ok(res, responseData);
   }
@@ -120,10 +117,8 @@ export class OfferController extends BaseController {
     this.okNoContent(res);
   }
 
-  public async indexPremium({ params, tokenPayload }: Request<ParamCity>, res: Response): Promise<void> {
-    const userId = tokenPayload ? tokenPayload.id : null;
-
-    const offers = await this.offerService.findPremiumByCity(userId, params.city);
+  public async indexPremium({ params, tokenPayload: { id } }: Request<ParamCity>, res: Response): Promise<void> {
+    const offers = await this.offerService.findPremiumByCity((id ?? null), params.city);
     const responseData = fillDTO(OfferRdo, offers);
     this.ok(res, responseData);
   }
