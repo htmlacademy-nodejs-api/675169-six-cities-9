@@ -1,45 +1,67 @@
-
 import { NextFunction, Request, Response } from 'express';
+import { jwtVerify } from 'jose';
 import { StatusCodes } from 'http-status-codes';
-import { DocumentExists } from '../../../types/index.js';
+
+import { createSecretKey } from 'node:crypto';
+
+import { Middleware } from './middleware.interface.js';
 import { HttpError } from '../errors/index.js';
-import { Middleware } from '../index.js';
-import { Types } from 'mongoose';
+import { TokenPayload } from '../../../modules/auth/index.js';
+import { DocumentExists } from '../../../types/index.js';
+
+
+function isTokenPayload(payload: unknown): payload is TokenPayload {
+  return (
+    (typeof payload === 'object' && payload !== null) &&
+    ('email' in payload && typeof payload.email === 'string') &&
+    ('name' in payload && typeof payload.name === 'string') &&
+    ('id' in payload && typeof payload.id === 'string')
+  );
+}
 
 export class AuthorisationMiddleware implements Middleware {
   constructor(
-    private readonly service: DocumentExists,
+    private readonly jwtSecret: string,
+     private readonly service: DocumentExists,
   ) {}
 
-  public async execute({ tokenPayload }: Request, _res: Response, next: NextFunction): Promise<void> {
-    // if (! tokenPayload) {
-    //   throw new HttpError(
-    //     StatusCodes.UNAUTHORIZED,
-    //     'Unauthorized',
-    //     'PrivateRouteMiddleware'
-    //   );
-    // }
+  public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
 
-    // проверка на валидность userId
-    if (! Types.ObjectId.isValid(tokenPayload.id)) {
-      throw new HttpError(
-        StatusCodes.BAD_REQUEST,
-        `${tokenPayload.id} is invalid offer id`,
-        'AuthorMiddleware'
-      );
+    const authorizationHeader = req.headers?.authorization?.split(' ');
+
+    if (!authorizationHeader) {
+      return next();
     }
 
-    const offer = await this.service.exists(tokenPayload.id);
+    const [, token] = authorizationHeader;
 
-    if (! offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `User with ${tokenPayload.id} not found.`,
-        'AuthorisationMiddleware'
+    try {
+      const { payload } = await jwtVerify(token, createSecretKey(this.jwtSecret, 'utf-8'));
+
+      if (isTokenPayload(payload)) {
+
+        const user = await this.service.exists(payload.id);
+
+        if (! user) {
+          throw new HttpError(
+            StatusCodes.NOT_FOUND,
+            `User with ${payload.id} not found.`,
+            'AuthorisationMiddleware'
+          );
+        }
+
+        req.tokenPayload = { ...payload };
+        return next();
+      } else {
+        throw new Error('Bad token');
+      }
+    } catch {
+
+      return next(new HttpError(
+        StatusCodes.UNAUTHORIZED,
+        'Invalid token',
+        'AuthorisationMiddleware')
       );
     }
-
-    next();
   }
 }
-

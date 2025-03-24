@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware, PrivateRouteMiddleware, AuthorisationMiddleware } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware, PrivateRouteMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { ChangeFavoriteRequest, CreateUserDto, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
@@ -26,7 +26,6 @@ export class UserController extends BaseController {
 
     const userMiddlewares = [
       new PrivateRouteMiddleware(),
-      new AuthorisationMiddleware(this.userService),
     ];
 
     const routes = [
@@ -48,9 +47,9 @@ export class UserController extends BaseController {
         ]
       },
       {
-        path: '/login',
+        path: '/profile',
         method: HttpMethod.Get,
-        handler: this.checkAuthenticate,
+        handler: this.profile,
         middlewares: userMiddlewares
       },
       {
@@ -136,10 +135,9 @@ export class UserController extends BaseController {
     });
   }
 
-  public async checkAuthenticate({ tokenPayload: { email }}: Request, res: Response) {
+  public async profile({ tokenPayload: { email }}: Request, res: Response) {
     const foundedUser = await this.userService.findByEmail(email);
 
-    // TODO: нужно ли токен возвращать, сейчас просто возвращается вся информация о пользователе?
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
   }
 }

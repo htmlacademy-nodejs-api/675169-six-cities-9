@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { AuthorisationMiddleware, AuthorMiddleware, BaseController, DocumentExistsMiddleware, HttpMethod, PrivateRouteMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { AuthorMiddleware, BaseController, DocumentExistsMiddleware, HttpMethod, PrivateRouteMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { CommentService } from './comment-service.interface.js';
@@ -9,7 +9,6 @@ import { fillDTO } from '../../helpers/index.js';
 import { CreateCommentRequest } from './create-comment-request.type.js';
 import { OfferService, ParamOfferId } from '../offer/index.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
-import { UserService } from '../user/index.js';
 
 @injectable()
 export class CommentController extends BaseController {
@@ -17,7 +16,6 @@ export class CommentController extends BaseController {
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
     @inject(Component.OfferService) private readonly offerService: OfferService,
-    @inject(Component.UserService) private readonly userService: UserService,
   ) {
     super(logger);
 
@@ -25,7 +23,6 @@ export class CommentController extends BaseController {
 
     const userMiddlewares = [
       new PrivateRouteMiddleware(),
-      new AuthorisationMiddleware(this.userService),
     ];
 
     const offerMiddlewares = [
