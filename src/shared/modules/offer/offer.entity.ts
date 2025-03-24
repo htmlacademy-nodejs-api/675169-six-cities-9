@@ -1,9 +1,9 @@
-import { ComfortList} from '../../types/index.js';
 import { defaultClasses, getModelForClass, prop, modelOptions, Ref } from '@typegoose/typegoose';
 import { CityEnum } from '../../enums/city.enum.js';
-import { HousingEnum } from '../../enums/index.js';
+import { ComfortsEnum, HousingEnum } from '../../enums/index.js';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, guestsNumberValidation, rentPriceValidation, roomsNumberValidation, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../constants/index.js';
 import { UserEntity } from '../user/user.entity.js';
+import { Coordinate } from '../../types/coordinate.type.js';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
@@ -65,13 +65,10 @@ export class OfferEntity extends defaultClasses.TimeStamps {
     required: true,
     type: () => [String],
   })
-  public comforts: ComfortList;
+  public comforts: ComfortsEnum[];
 
-  @prop({
-    type: () => [Number],
-    required: true,
-  })
-  public coordinates: number[];
+  @prop({ required: true })
+  public coordinates: Coordinate;
 
   @prop({
     required: true,

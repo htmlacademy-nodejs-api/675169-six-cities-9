@@ -2,7 +2,7 @@ import { DocumentType, types } from '@typegoose/typegoose';
 import { inject, injectable } from 'inversify';
 import { FullOffer } from '../../types/index.js';
 import { Logger } from '../../libs/logger/index.js';
-import { OfferService, CreateOfferDto } from './index.js';
+import { OfferService, CreateOfferDto, EditOfferDto } from './index.js';
 import { MAX_ITEMS_PER_PAGE, MAX_PREMIUM_NUMBER } from '../../constants/index.js';
 import { Component, SortType } from '../../enums/index.js';
 import { OfferEntity } from './offer.entity.js';
@@ -22,62 +22,72 @@ export class DefaultOfferService implements OfferService {
 
   public async isOfferAuthor(userId: string, offerId: string): Promise<boolean> {
     const offer = await this.offerModel.findById(offerId);
-    const populatedOffer = await offer?.populate('userId');
 
-    return populatedOffer?.userId._id.toString() === userId;
+    if (!offer) {
+      return false;
+    }
+
+    const populatedOffer = await offer.populate('userId');
+    return populatedOffer.userId._id.toString() === userId;
   }
 
-  private readonly aggregateArray = [
-    {
-      $lookup: {
-        from: 'comments',
-        let: { offerId: '$_id'},
-        pipeline: [
-          { $match: { $expr: { $in: ['$$offerId', '$offerId'] } } },
-          { $project: { _id: 1, rating: 1}}
-        ],
-        as: 'comments'
+  private getAgregateArray(userId: string | null) {
+    const favAggregateArray = userId ? [
+      {
+        $lookup: {
+          from: 'users',
+          let: { userId: new mongoose.Types.ObjectId(userId) },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$userId'] } } }, // Находим пользователя по _id
+            { $project: { _id: 0, favoriteOfferIds: 1 } }
+          ],
+          as: 'userData'
+        }
       },
-    },
-    { $addFields: {
-      commentsNumber: { $size: '$comments' },
-      rating: { $avg: '$comments.rating' }
-    },
-    },
-    { $unset: 'comments' },
-
-    // добавляем isFavorite
-    {
-      $lookup: {
-        from: 'users',
-        let: { email: '$email' },
-        pipeline: [
-          { $match: { $expr: { $eq: ['$email', '$$email'] } } },
-          { $project: { _id: 1, favoriteOfferIds: 1 } }
-        ],
-        as: 'user'
-      }
-    },
-    {
-      $addFields: {
-        isFavorite: {
-          $cond: {
-            if: {
-              $in: [
-                '$_id',
-                { $ifNull: [{ $arrayElemAt: ['$user.favoriteOfferIds', 0] }, []] }
-              ]
-            },
-            then: true,
-            else: false
+      {
+        $addFields: {
+          isFavorite: {
+            $in: [
+              { $toString: '$_id' },
+              { $ifNull: [{ $arrayElemAt: ['$userData.favoriteOfferIds', 0] }, []] } // Берем favoriteOfferIds (или пустой массив, если данных нет)
+            ]
           }
         }
+      },
+      { $unset: 'userData' } // Убираем временные данные пользователя
+    ] : [
+      {
+        $addFields: { isFavorite: false }
       }
-    },
+    ];
 
-    { $unset: 'user' },
-    { $sort: { createdAt: SortType.Down } }
-  ];
+    const aggregateArray = [
+      {
+        $lookup: {
+          from: 'comments',
+          let: { offerId: '$_id'},
+          pipeline: [
+            { $match: { $expr: { $in: ['$$offerId', '$offerId'] } } },
+            { $project: { _id: 1, rating: 1}}
+          ],
+          as: 'comments'
+        },
+      },
+      { $addFields: {
+        commentsNumber: { $size: '$comments' },
+        rating: { $avg: '$comments.rating' }
+      },
+      },
+      { $unset: 'comments' },
+
+      // добавляем isFavorite
+      ...favAggregateArray,
+
+      { $sort: { createdAt: SortType.Down } }
+    ];
+
+    return aggregateArray;
+  }
 
   public async create(dto: CreateOfferDto): Promise<DocumentType<OfferEntity>> {
     const result = await this.offerModel.create(dto);
@@ -86,29 +96,32 @@ export class DefaultOfferService implements OfferService {
     return result;
   }
 
-  public async find(limit = MAX_ITEMS_PER_PAGE): Promise<DocumentType<FullOffer>[]> {
-    return await this.offerModel.aggregate(this.aggregateArray).limit(limit).exec();
+  public async find(userId: string | null, limit = MAX_ITEMS_PER_PAGE): Promise<DocumentType<FullOffer>[]> {
+    const aggregateArray = this.getAgregateArray(userId);
+    return await this.offerModel.aggregate(aggregateArray).limit(limit).exec();
   }
 
-  public async findAllByIds(offerIds: string[]): Promise<DocumentType<FullOffer>[]> {
-    const objectIds = offerIds.map((id) => new mongoose.Types.ObjectId(id));
+  public async findAllByIds(userId: string | null, offerIds: string[]): Promise<DocumentType<FullOffer>[]> {
+    const objectIds = offerIds.map((offerId) => new mongoose.Types.ObjectId(offerId));
+    const aggregateArray = this.getAgregateArray(userId);
 
     return await this.offerModel.aggregate([
       { $match: { _id: { $in: objectIds } } },
-      ...this.aggregateArray,
+      ...aggregateArray,
     ]).exec();
   }
 
-  public async findById(offerId: string): Promise<DocumentType<FullOffer> | null> {
+  public async findById(userId: string | null, offerId: string): Promise<DocumentType<FullOffer> | null> {
+    const aggregateArray = this.getAgregateArray(userId);
+
     return await this.offerModel.aggregate([
       { $match: { _id: new Types.ObjectId(offerId) } },
-      ...this.aggregateArray
+      ...aggregateArray
     ]).then((results) => results[0] || null);
   }
 
-  public async updateById(offerId: string, dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null> {
+  public async updateById(offerId: string, dto: EditOfferDto): Promise<DocumentType<OfferEntity> | null> {
     const result = await this.offerModel.findByIdAndUpdate(offerId, dto, {new: true}).exec();
-
     this.logger.info(`The offer was updateded: ${dto.title}`);
 
     return result;
@@ -120,10 +133,12 @@ export class DefaultOfferService implements OfferService {
     return res;
   }
 
-  public async findPremiumByCity(city: string): Promise<DocumentType<FullOffer>[]> {
+  public async findPremiumByCity(userId: string | null, city: string): Promise<DocumentType<FullOffer>[]> {
+    const aggregateArray = this.getAgregateArray(userId);
+
     return this.offerModel.aggregate([
       { $match: { city, premium: true } },
-      ...this.aggregateArray,
+      ...aggregateArray,
     ]).limit(MAX_PREMIUM_NUMBER).exec();
   }
 }

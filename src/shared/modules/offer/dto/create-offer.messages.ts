@@ -29,7 +29,7 @@ export const CreateOfferValidationMessage = {
     invalidId: 'userId field must be a valid id',
   },
   city: {
-    invalid: 'City must be one from this list: Paris, Cologne, Brussels, Brussels, Amsterdam, Hamburg, Dusseldorf',
+    invalid: 'City must be one from this list: Paris, Cologne, Brussels, Amsterdam, Hamburg, Dusseldorf',
   },
   premium: {
     invalid: 'Premium must be boolean'

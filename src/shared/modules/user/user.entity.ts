@@ -36,8 +36,7 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
     this.name = userData.name;
     this.email = userData.email;
-
-    this.image = userData.image;
+    this.image = userData.image as string;
   }
 
   public setPassword(password: string, salt: string) {
@@ -46,6 +45,12 @@ export class UserEntity extends defaultClasses.TimeStamps implements User {
 
   public getPassword() {
     return this.password;
+  }
+
+  public verifyPassword(password: string, salt: string) {
+    const hashPassword = createSHA256(password, salt);
+
+    return hashPassword === this.password;
   }
 }
 

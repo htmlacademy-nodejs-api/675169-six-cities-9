@@ -20,5 +20,5 @@ export class CreateUserDto {
   @IsOptional()
   @IsString({ message: CreateUserMessages.image.invalidFormat })
   @Matches(/\.(jpg|png)$/, { message: CreateUserMessages.image.invalidFormatExtended })
-  public image: string;
+  public image?: string;
 }

@@ -1,5 +1,5 @@
-import { CityEnum, HousingEnum } from '../enums/index.js';
-import { ComfortList, Coordinate, User } from './index.js';
+import { CityEnum, ComfortsEnum, HousingEnum } from '../enums/index.js';
+import { Coordinate, User } from './index.js';
 
 export type Offer = {
   title: string;
@@ -12,7 +12,7 @@ export type Offer = {
   roomsNumber: number;
   guestsNumber: number;
   rentPrice: number;
-  comforts: ComfortList;
+  comforts: ComfortsEnum[];
   coordinates: Coordinate;
   author: User
 }

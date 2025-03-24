@@ -11,3 +11,4 @@ export * from './type/param-offerid.type.js';
 export * from './type/param-city.type.js';
 export * from './dto/create-offer.messages.js';
 export * from './dto/edit-offer.dto.js';
+export * from './dto/coordinates.dto.js';
