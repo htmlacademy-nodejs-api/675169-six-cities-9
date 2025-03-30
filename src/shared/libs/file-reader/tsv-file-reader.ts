@@ -4,7 +4,7 @@ import { CityEnum, ComfortsEnum, HousingEnum } from '../../enums/index.js';
 import { Coordinate, User } from '../../types/index.js';
 import { NEWLINE, SEMICOLON, TAB_SPACE } from '../../constants/index.js';
 import { createReadStream } from 'node:fs';
-import { Offer } from '../../types/offer.type.js';
+import { Offer } from '../../types/index.js';
 
 export class TSVFileReader extends EventEmitter implements FileReader {
   private CHUNK_SIZE = 16384; // 16KB
@@ -44,7 +44,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       guestsNumber: Number(guestsNumber),
       rentPrice: Number(rentPrice),
       comforts: this.parseComforts(comforts),
-      coordinates: this.parseCoordintates(coordinate),
+      coordinates: this.parseCoordinates(coordinate),
       author: this.parseUser(author)
     };
   }
@@ -63,10 +63,9 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return items as unknown as ComfortsEnum[];
   }
 
-  private parseCoordintates(coordintatesString: string): Coordinate {
+  private parseCoordinates(coordintatesString: string): Coordinate {
     const [latitude, longitude] = coordintatesString.split(SEMICOLON);
-    const result = {latitude: Number(latitude), longitude: Number(longitude)};
-    return result;
+    return {latitude: Number(latitude), longitude: Number(longitude)};
   }
 
   private parseUser(userString: string): User {

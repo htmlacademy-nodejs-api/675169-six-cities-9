@@ -15,7 +15,7 @@ export abstract class BaseController implements Controller {
   private readonly _router: Router;
 
   @inject(Component.PathTransformer)
-  private pathTranformer: PathTransformer;
+  private pathTransformer: PathTransformer;
 
   constructor(
     protected readonly logger: Logger
@@ -43,7 +43,7 @@ export abstract class BaseController implements Controller {
   }
 
   public send<T>(res: Response, statusCode: number, data: T): void {
-    const modifiedData = this.pathTranformer.execute(data as Record<string, unknown>);
+    const modifiedData = this.pathTransformer.execute(data as Record<string, unknown>);
     res
       .type(this.DEFAULT_CONTENT_TYPE)
       .status(statusCode)

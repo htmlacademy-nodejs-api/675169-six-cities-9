@@ -5,7 +5,7 @@ POST http://localhost:4000/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "helloworld1@email.com",
+  "email": "helloworld11@email.com",
   "name": "Jack",
   "password": "password",
   "isPro": false

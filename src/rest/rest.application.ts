@@ -33,7 +33,7 @@ export class RestApplication {
 
     this.server.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
     this.server.use(this.httpExceptionFilter.catch.bind(this.httpExceptionFilter));
-    this.logger.info('Exception filters initialization compleated');
+    this.logger.info('Exception filters initialization completed');
   }
 
   private async initMiddleware() {

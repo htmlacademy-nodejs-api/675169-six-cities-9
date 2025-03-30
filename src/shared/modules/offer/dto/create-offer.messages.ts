@@ -52,7 +52,7 @@ export const CreateOfferValidationMessage = {
   },
   coordinates: {
     invalidFormat: 'Coordinates must me array of type ComfortsEnum',
-    invalidLength: 'Coordinates msut always have length 2',
+    invalidLength: 'Coordinates must always have length 2',
     invalidItemFormat: 'Each coordinate must be a number',
     invalidLatitude: 'Latitude must be from -90 to 90',
     invalidLongitude: 'Longitude must be from -180 to 180'

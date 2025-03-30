@@ -4,12 +4,12 @@ import { Offer } from '../../shared/types/index.js';
 import { Command } from './command.interface.js';
 import { TSVFileReader } from '../../shared/libs/file-reader/index.js';
 import { DefaultOfferService, OfferModel, OfferService } from '../../shared/modules/offer/index.js';
-import { DatabaseClient } from '../../shared/libs/database-client/database-client.interface.js';
+import { DatabaseClient } from '../../shared/libs/database-client/index.js';
 
 import { ConsoleLogger, Logger } from '../../shared/libs/logger/index.js';
-import { MongoDatabaseClient } from '../../shared/libs/database-client/mongo.database-client.js';
+import { MongoDatabaseClient } from '../../shared/libs/database-client/index.js';
 
-import { UserModel } from '../../shared/modules/user/user.entity.js';
+import { UserModel } from '../../shared/modules/user/index.js';
 import { DefaultUserService, UserService } from '../../shared/modules/user/index.js';
 import { DEFAULT_DB_PORT, DEFAULT_USER_PASSWORD } from './command.constant.js';
 import { getMongoURI } from '../../shared/helpers/index.js';
@@ -60,7 +60,7 @@ export class ImportCommand implements Command {
     fileReader.on('end', this.onCompleteImport);
 
     try {
-      fileReader.read();
+      await fileReader.read();
     } catch (error) {
       console.error(`Can't import data from file: ${filename}`);
       console.error(getErrorMessage(error));

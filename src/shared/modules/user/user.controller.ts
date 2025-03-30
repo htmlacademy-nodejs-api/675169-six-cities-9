@@ -131,12 +131,6 @@ export class UserController extends BaseController {
     this.created(res, fillDTO(UserRdo, result));
   }
 
-  // public async uploadAvatar(req: Request, res: Response) {
-  //   this.created(res, {
-  //     filepath: req.file?.path
-  //   });
-  // }
-
   public async uploadAvatar({ file, tokenPayload }: Request, res: Response) {
     console.log('tokenPayload', tokenPayload);
     const { id } = tokenPayload;

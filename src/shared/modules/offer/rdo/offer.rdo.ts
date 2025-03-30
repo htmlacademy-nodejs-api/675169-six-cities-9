@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 import { CityEnum, HousingEnum } from '../../../enums/index.js';
-import { ComfortList } from '../../../types/comforts.type.js';
+import { ComfortList } from '../../../types/index.js';
 
 export class OfferRdo {
   // TODO: do we need id (probably yes) how to make id not _id

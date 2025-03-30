@@ -16,9 +16,4 @@ export class CreateUserDto {
 
   @IsBoolean({ message: CreateUserMessages.isPro.invalid })
   public isPro: boolean;
-
-  // @IsOptional()
-  // @IsString({ message: CreateUserMessages.image.invalidFormat })
-  // @Matches(/\.(jpg|png)$/, { message: CreateUserMessages.image.invalidFormatExtended })
-  // public image?: string;
 }
