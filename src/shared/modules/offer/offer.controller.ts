@@ -1,12 +1,14 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { AuthorMiddleware, BaseController, DocumentExistsMiddleware, HttpMethod, PrivateRouteMiddleware, ValidateCityMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { AuthorisationMiddleware, AuthorMiddleware, BaseController, DocumentExistsMiddleware, HttpMethod, ValidateCityMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { OfferService } from './offer-service.interface.js';
 import { fillDTO } from '../../helpers/index.js';
 import { CreateOfferDto, CreateOfferRequest, EditOfferDto, OfferRdo, ParamCity, ParamOfferId } from './index.js';
 import { EditOfferRequest } from '../user/index.js';
+import { Config, RestSchema } from '../../libs/config/index.js';
+import { UserService } from '../user/index.js';
 
 
 @injectable()
@@ -14,6 +16,9 @@ export class OfferController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.OfferService) private readonly offerService: OfferService,
+
+    @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.Config) private readonly config: Config<RestSchema>,
   ) {
     super(logger);
 
@@ -35,7 +40,7 @@ export class OfferController extends BaseController {
         method: HttpMethod.Post,
         handler: this.create,
         middlewares: [
-          new PrivateRouteMiddleware(),
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           new ValidateDtoMiddleware(CreateOfferDto)
         ]
       },
@@ -51,7 +56,7 @@ export class OfferController extends BaseController {
         method: HttpMethod.Put,
         handler: this.update,
         middlewares: [
-          new PrivateRouteMiddleware(),
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           ...offerMiddlewares,
           new AuthorMiddleware(this.offerService, 'Offer', 'offerId'),
           new ValidateDtoMiddleware(EditOfferDto),
@@ -62,7 +67,7 @@ export class OfferController extends BaseController {
         method: HttpMethod.Delete,
         handler: this.delete,
         middlewares: [
-          new PrivateRouteMiddleware(),
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           ...offerMiddlewares,
           new AuthorMiddleware(this.offerService, 'Offer', 'offerId'),
         ]

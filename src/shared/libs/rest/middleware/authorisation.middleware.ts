@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { jwtVerify } from 'jose';
 import { StatusCodes } from 'http-status-codes';
-
 import { createSecretKey } from 'node:crypto';
-
 import { Middleware } from './middleware.interface.js';
 import { HttpError } from '../errors/index.js';
 import { TokenPayload } from '../../../modules/auth/index.js';
@@ -22,7 +20,7 @@ function isTokenPayload(payload: unknown): payload is TokenPayload {
 export class AuthorisationMiddleware implements Middleware {
   constructor(
     private readonly jwtSecret: string,
-     private readonly service: DocumentExists,
+    private readonly service: DocumentExists,
   ) {}
 
   public async execute(req: Request, _res: Response, next: NextFunction): Promise<void> {
@@ -38,7 +36,16 @@ export class AuthorisationMiddleware implements Middleware {
     try {
       const { payload } = await jwtVerify(token, createSecretKey(this.jwtSecret, 'utf-8'));
 
+      if (! payload) {
+        throw new HttpError(
+          StatusCodes.UNAUTHORIZED,
+          'Unauthorized',
+          'AuthorisationMiddleware'
+        );
+      }
+
       if (isTokenPayload(payload)) {
+        req.tokenPayload = { ...payload };
 
         const user = await this.service.exists(payload.id);
 
@@ -50,7 +57,6 @@ export class AuthorisationMiddleware implements Middleware {
           );
         }
 
-        req.tokenPayload = { ...payload };
         return next();
       } else {
         throw new Error('Bad token');
@@ -59,7 +65,7 @@ export class AuthorisationMiddleware implements Middleware {
 
       return next(new HttpError(
         StatusCodes.UNAUTHORIZED,
-        'Invalid token',
+        'Invalid token, Unauthorized',
         'AuthorisationMiddleware')
       );
     }

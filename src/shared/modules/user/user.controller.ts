@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware, PrivateRouteMiddleware } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware, AuthorisationMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { ChangeFavoriteRequest, CreateUserDto, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
@@ -20,13 +20,10 @@ export class UserController extends BaseController {
     @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
     @inject(Component.AuthService) private readonly authService: AuthService,
+    @inject(Component.Config) private readonly config: Config<RestSchema>,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
-
-    const userMiddlewares = [
-      new PrivateRouteMiddleware(),
-    ];
 
     const routes = [
       {
@@ -50,26 +47,32 @@ export class UserController extends BaseController {
         path: '/profile',
         method: HttpMethod.Get,
         handler: this.profile,
-        middlewares: userMiddlewares
+        middlewares: [
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
+        ]
       },
       {
         path: '/logout',
         method: HttpMethod.Post,
         handler: this.logout,
-        middlewares: userMiddlewares
+        middlewares: [
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
+        ]
       },
       {
         path: '/favorites',
         method: HttpMethod.Get,
         handler: this.indexFavorites,
-        middlewares: userMiddlewares
+        middlewares: [
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
+        ]
       },
       {
         path: '/favorites/offers/:offerId',
         method: HttpMethod.Put,
         handler: this.update,
         middlewares: [
-          ...userMiddlewares,
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           new ValidateObjectIdMiddleware('offerId'),
           new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         ]
@@ -79,7 +82,7 @@ export class UserController extends BaseController {
         method: HttpMethod.Post,
         handler: this.uploadAvatar,
         middlewares: [
-          ...userMiddlewares,
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
         ]
       }
@@ -89,7 +92,7 @@ export class UserController extends BaseController {
   }
 
   public async update({ params, tokenPayload }: ChangeFavoriteRequest, res: Response): Promise<void> {
-    const updatedUser = await this.userService.addToOrRemoveFromFavoritesById(tokenPayload.id, params.offerId);
+    const updatedUser = await this.userService.addOrRemoveFromFavoritesById(tokenPayload.id, params.offerId);
     const responseData = fillDTO(UserRdo, updatedUser);
     this.ok(res, responseData);
   }

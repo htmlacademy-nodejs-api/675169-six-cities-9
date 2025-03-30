@@ -5,8 +5,7 @@ import { Component } from '../shared/enums/index.js';
 import { DatabaseClient } from '../shared/libs/database-client/index.js';
 import { getMongoURI } from '../shared/helpers/index.js';
 import express, { Express } from 'express';
-import { AuthorisationMiddleware, Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
-import { UserService } from '../shared/modules/user/user-service.interface.js';
+import { Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
 
 @injectable()
 export class RestApplication {
@@ -21,9 +20,6 @@ export class RestApplication {
     @inject(Component.CommentController) private readonly commentController: Controller,
     @inject(Component.ExceptionFilter) private readonly appExceptionFilter: ExceptionFilter,
     @inject(Component.AuthExceptionFilter) private readonly authExceptionFilter: ExceptionFilter,
-
-    @inject(Component.UserService) private readonly userService: UserService,
-
   ) {}
 
   private async initExceptionFilters() {
@@ -35,14 +31,12 @@ export class RestApplication {
 
   private async initMiddleware() {
     this.logger.info('Init app-level middleware');
-    const authenticateMiddleware = new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService);
 
     this.server.use(express.json());
     this.server.use(
       '/upload',
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
-    this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
     this.logger.info('App-level middleware initialization completed');
   }
 

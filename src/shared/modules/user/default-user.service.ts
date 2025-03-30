@@ -56,14 +56,18 @@ export class DefaultUserService implements UserService {
     return this.create(dto, salt);
   }
 
-  public async addToOrRemoveFromFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+  public async addOrRemoveFromFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
     const user = await this.userModel.findById(userId);
     const hasOfferId = user?.favoriteOfferIds?.includes(offerId);
+
+    const hasNoOfferId = !user?.favoriteOfferIds?.includes(offerId);
+
+    const operator = hasNoOfferId ? '$addToSet' : '$pull';
 
     this.logger.info(`User with id ${userId} ${!hasOfferId ? 'added' : 'removed'} offer with id ${offerId} from favorites`);
     return await this.userModel.findByIdAndUpdate(
       userId,
-      !hasOfferId ? { $addToSet: { favoriteOfferIds: offerId } } : { $pull: { favoriteOfferIds: offerId } },
+      {[operator]: { favoriteOfferIds: offerId } },
       { new: true }
     ).exec();
   }
