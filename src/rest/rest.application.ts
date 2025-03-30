@@ -6,6 +6,7 @@ import { DatabaseClient } from '../shared/libs/database-client/index.js';
 import { getMongoURI } from '../shared/helpers/index.js';
 import express, { Express } from 'express';
 import { Controller, ExceptionFilter } from '../shared/libs/rest/index.js';
+import cors from 'cors';
 
 @injectable()
 export class RestApplication {
@@ -37,6 +38,7 @@ export class RestApplication {
       '/upload',
       express.static(this.config.get('UPLOAD_DIRECTORY'))
     );
+    this.server.use(cors());
     this.logger.info('App-level middleware initialization completed');
   }
 
