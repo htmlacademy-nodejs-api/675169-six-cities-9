@@ -12,3 +12,5 @@ export * from './type/create-user-request.type.js';
 export * from './type/param-offerid.type.js';
 export * from './type/edit-offer-request.type.js';
 export * from './dto/login-user.dto.js';
+export * from './user.constant.js';
+export * from './dto/update-user.dto.js';

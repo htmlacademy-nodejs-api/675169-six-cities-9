@@ -1,4 +1,4 @@
-import { IsBoolean, IsEmail, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { IsBoolean, IsEmail, IsString, Length} from 'class-validator';
 import { CreateUserMessages } from './create-user.messages.js';
 import { PASSWORD_MAX_NUMBER, PASSWORD_MIN_NUMBER, USER_NAME_MAX, USER_NAME_MIN } from '../../../constants/index.js';
 
@@ -17,8 +17,8 @@ export class CreateUserDto {
   @IsBoolean({ message: CreateUserMessages.isPro.invalid })
   public isPro: boolean;
 
-  @IsOptional()
-  @IsString({ message: CreateUserMessages.image.invalidFormat })
-  @Matches(/\.(jpg|png)$/, { message: CreateUserMessages.image.invalidFormatExtended })
-  public image?: string;
+  // @IsOptional()
+  // @IsString({ message: CreateUserMessages.image.invalidFormat })
+  // @Matches(/\.(jpg|png)$/, { message: CreateUserMessages.image.invalidFormatExtended })
+  // public image?: string;
 }
