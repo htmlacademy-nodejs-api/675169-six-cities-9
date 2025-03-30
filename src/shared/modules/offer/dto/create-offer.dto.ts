@@ -36,7 +36,7 @@ export class CreateOfferDto {
   @IsBoolean({ message: CreateOfferValidationMessage.premium.invalid })
     premium: boolean;
 
-  @IsEnum(HousingEnum, { message: CreateOfferValidationMessage.city.invalid })
+  @IsEnum(HousingEnum, { message: CreateOfferValidationMessage.housingType.invalid })
     housingType: HousingEnum;
 
   @IsInt({ message: CreateOfferValidationMessage.roomsNumber.invalidFormat })
@@ -64,6 +64,5 @@ export class CreateOfferDto {
   @Type(() => CoordinatesDto)
     coordinates: Coordinate;
 
-  // @IsMongoId({ message: CreateOfferValidationMessage.userId.invalidId })
   userId: string;
 }

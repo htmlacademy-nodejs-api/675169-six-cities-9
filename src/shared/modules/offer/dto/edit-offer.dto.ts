@@ -1,5 +1,5 @@
 import { CityEnum, ComfortsEnum, HousingEnum } from '../../../enums/index.js';
-import { ComfortList, Coordinate } from '../../../types/index.js';
+import { Coordinate } from '../../../types/index.js';
 import { IsArray, IsBoolean, IsEnum, IsInt, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, IsOptional, ValidateNested } from 'class-validator';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, IMAGES_LENGTH, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../../constants/index.js';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
@@ -69,7 +69,7 @@ export class EditOfferDto {
   @ArrayMinSize(1, { message: CreateOfferValidationMessage.comforts.invalidLength })
   @ArrayMaxSize(Object.keys(ComfortsEnum).length, { message: CreateOfferValidationMessage.comforts.invalidLength })
   @IsEnum(ComfortsEnum, { each: true, message: CreateOfferValidationMessage.comforts.invalidItemFormat })
-    comforts?: ComfortList;
+    comforts?: ComfortsEnum[];
 
   @IsOptional()
   @ValidateNested({ message: CreateOfferValidationMessage.coordinates.invalidItemFormat})

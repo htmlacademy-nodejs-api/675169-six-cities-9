@@ -69,7 +69,7 @@ export class UserController extends BaseController {
         ]
       },
       {
-        path: '/favorites/offers/:offerId',
+        path: '/favorites/:offerId',
         method: HttpMethod.Put,
         handler: this.update,
         middlewares: [
@@ -119,7 +119,6 @@ export class UserController extends BaseController {
 
 
   public async logout(_req: LoginUserRequest, res: Response): Promise<void> {
-    // TODO: Выход из авторизированного режима
     this.okNoContent(res);
   }
 
@@ -136,9 +135,9 @@ export class UserController extends BaseController {
     const { id } = tokenPayload;
 
 
-    const uploadFile = { avatarPath: file?.filename };
+    const uploadFile = { image: file?.filename };
     await this.userService.updateById(id, uploadFile);
-    this.created(res, fillDTO(UploadUserAvatarRdo, { filepath: uploadFile.avatarPath }));
+    this.created(res, fillDTO(UploadUserAvatarRdo, { filepath: uploadFile.image }));
   }
 
   public async profile({ tokenPayload: { email }}: Request, res: Response) {
