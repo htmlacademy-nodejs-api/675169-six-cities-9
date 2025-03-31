@@ -9,6 +9,7 @@ import { CreateOfferDto, CreateOfferRequest, EditOfferDto, OfferRdo, ParamCity, 
 import { EditOfferRequest } from '../user/index.js';
 import { Config, RestSchema } from '../../libs/config/index.js';
 import { UserService } from '../user/index.js';
+import { CommentService } from '../comment/index.js';
 
 
 @injectable()
@@ -19,6 +20,7 @@ export class OfferController extends BaseController {
 
     @inject(Component.UserService) private readonly userService: UserService,
     @inject(Component.Config) private readonly config: Config<RestSchema>,
+    @inject(Component.CommentService) private readonly commentService: CommentService,
   ) {
     super(logger);
 
@@ -112,7 +114,7 @@ export class OfferController extends BaseController {
 
   public async delete({ params }: Request<ParamOfferId>, res: Response): Promise<void> {
     await this.offerService.deleteById(params.offerId);
-
+    await this.commentService.deleteAllByOfferId(params.offerId);
     this.okNoContent(res);
   }
 

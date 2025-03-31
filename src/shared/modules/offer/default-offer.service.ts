@@ -122,7 +122,7 @@ export class DefaultOfferService implements OfferService {
 
   public async updateById(offerId: string, dto: EditOfferDto): Promise<DocumentType<OfferEntity> | null> {
     const result = await this.offerModel.findByIdAndUpdate(offerId, dto, {new: true}).exec();
-    this.logger.info(`The offer was updateded: ${dto.title}`);
+    this.logger.info(`The offer was updated: ${dto.title}`);
 
     return result;
   }

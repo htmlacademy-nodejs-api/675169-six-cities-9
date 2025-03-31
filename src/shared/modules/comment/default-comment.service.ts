@@ -19,7 +19,6 @@ export class DefaultCommentService implements CommentService {
     return newComment;
   }
 
-  // TODO do we need this?
   public async findAllByAuthorId(authorId: string): Promise<DocumentType<CommentEntity>[]> {
     return await this.commentModel.find({ author: authorId }).exec();
   }

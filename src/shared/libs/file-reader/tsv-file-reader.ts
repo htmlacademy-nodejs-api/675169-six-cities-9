@@ -63,8 +63,8 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return items as unknown as ComfortsEnum[];
   }
 
-  private parseCoordinates(coordintatesString: string): Coordinate {
-    const [latitude, longitude] = coordintatesString.split(SEMICOLON);
+  private parseCoordinates(coordinatesString: string): Coordinate {
+    const [latitude, longitude] = coordinatesString.split(SEMICOLON);
     return {latitude: Number(latitude), longitude: Number(longitude)};
   }
 

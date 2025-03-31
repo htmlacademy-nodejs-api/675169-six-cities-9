@@ -42,10 +42,6 @@ export class DefaultUserService implements UserService {
     return await this.userModel.findById(userId).exec();
   }
 
-  public async find(): Promise<DocumentType<UserEntity>[]> {
-    return await this.userModel.find().exec();
-  }
-
   public async findByEmailOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
     const existedUser = await this.findByEmail(dto.email);
 
@@ -58,13 +54,12 @@ export class DefaultUserService implements UserService {
 
   public async addOrRemoveFromFavoritesById(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
     const user = await this.userModel.findById(userId);
-    const hasOfferId = user?.favoriteOfferIds?.includes(offerId);
 
     const hasNoOfferId = !user?.favoriteOfferIds?.includes(offerId);
 
     const operator = hasNoOfferId ? '$addToSet' : '$pull';
 
-    this.logger.info(`User with id ${userId} ${!hasOfferId ? 'added' : 'removed'} offer with id ${offerId} from favorites`);
+    this.logger.info(`User with id ${userId} ${hasNoOfferId ? 'added' : 'removed'} offer with id ${offerId} from favorites`);
     return await this.userModel.findByIdAndUpdate(
       userId,
       {[operator]: { favoriteOfferIds: offerId } },

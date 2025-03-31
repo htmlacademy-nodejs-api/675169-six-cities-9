@@ -1,4 +1,4 @@
-import { DECIMAL_PLACES_ZERO, PASSWORD_MAX_NUMBER, PASSWORD_MIN_NUMBER } from '../constants/index.js';
+import { DECIMAL_PLACES_ZERO } from '../constants/index.js';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
 import { ApplicationError, ValidationErrorField } from '../libs/rest/index.js';
 import { ValidationError } from 'class-validator';
@@ -19,19 +19,6 @@ export function getRandomItem<T>(items: T[]):T {
 
 export function getRandomBoolean(): boolean {
   return Math.random() < 0.5;
-}
-
-export function getRandomPassword(): string {
-  const randomPasswordLength = generateRandomValue(PASSWORD_MIN_NUMBER,PASSWORD_MAX_NUMBER);
-
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-  let password = '';
-
-  for (let i = 0; i < randomPasswordLength; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  return password;
 }
 
 export function getErrorMessage(error: unknown): string {

@@ -2,9 +2,6 @@ export const SEMICOLON = ';';
 export const TAB_SPACE = '\t';
 export const NEWLINE = '\n';
 
-export const FIRST_WEEK_DAY = 1;
-export const LAST_WEEK_DAY = 7;
-
 export const RATING_MIN = 1;
 export const RATING_MAX = 5;
 
@@ -30,8 +27,6 @@ export const LONGITUDE = 180;
 
 export const DECIMAL_PLACES_ZERO = 0;
 export const DECIMAL_PLACES_ONE = 1;
-export const DECIMAL_PLACES_TWO = 1;
-export const DECIMAL_PLACES_THREE = 1;
 export const DECIMAL_PLACES_FOUR = 1;
 
 export const PASSWORD_MIN_NUMBER = 6;
