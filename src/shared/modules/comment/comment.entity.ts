@@ -2,7 +2,8 @@ import { Comment } from '../../types/index.js';
 import { defaultClasses, getModelForClass, prop, modelOptions, Ref } from '@typegoose/typegoose';
 import { UserEntity } from '../user/index.js';
 import { ratingValidation } from '../../constants/index.js';
-import { OfferEntity } from '../offer/offer.entity.js';
+import {OfferEntity} from '../offer/index.js';
+
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export interface CommentEntity extends defaultClasses.Base {}

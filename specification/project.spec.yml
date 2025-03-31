@@ -15,6 +15,7 @@ tags:
   - name: users
     description: Действия с пользователем.
 
+
 paths:
   /users/register:
     post:
@@ -62,11 +63,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  token:
-                    type: string
-                    example: sdsdsdsd
+                $ref: '#/components/schemas/loggedUser'
 
         "409":
           description: Ошибка email или пароля.
@@ -89,7 +86,7 @@ paths:
         "409":
           description: что то пошло не так
 
-  /users/state:
+  /users/profile:
     get:
       tags:
         - users
@@ -102,9 +99,56 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/successResponse'
+                $ref: '#/components/schemas/user'
         "409":
           description: Пользователь не авторизирован.
+
+  /users/favorites:
+    get:
+      tags:
+          - users
+      summary: Получение избранных объявлений
+      description: Получение избранных объявлений
+
+      responses:
+        "201":
+          description: Список избранных объявлений.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  favoriteOfferIds:
+                    type: array
+                    items:
+                      type: string
+                      example: '11111,aa234'
+        "409":
+          description: что то пошло не так
+
+  /users/favorites/offers/{offerId}:
+    put:
+      summary: Добавление или удаление объявления из списка избранного пользователя
+      description: Добавление или удаление объявления из списка избранного пользователя
+      parameters:
+        - name: offerId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "201":
+          description: Обновленный объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "409":
+          description:  что то пошло не так
+
+
+
+
 
   /offers:
     post:
@@ -400,10 +444,6 @@ components:
           type: string
           example: Keks
 
-        image:
-          type: string
-          example: image.jpg
-
         isPro:
           type: boolean
           example: true
@@ -416,6 +456,10 @@ components:
       type: object
 
       properties:
+        id:
+          type: string
+          example: 67e9217400bce0fdd9d1236f
+
         email:
           type: string
           example: keks@htmlacademy.ru
@@ -431,6 +475,42 @@ components:
         isPro:
           type: boolean
           example: true
+
+        favoriteOfferIds:
+          type: array
+          items:
+            type: string
+            example: '11111,aa234'
+
+    loggedUser:
+      type: object
+
+      properties:
+        token:
+          type: string
+          example: yJhbGciOiJIUzI1NiJ9
+
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+        name:
+          type: string
+          example: Keks
+
+        image:
+          type: string
+          example: http://localhost:4000/upload/default-avatar.png
+
+        isPro:
+          type: boolean
+          example: true
+
+        favoriteOfferIds:
+          type: array
+          items:
+            type: string
+            example: 'asd123,43svgg'
 
     successResponse:
       type: object
@@ -449,7 +529,7 @@ components:
           example: email@gmail.com
         password:
           type: string
-          example: sfddfghfgh
+          example: smartPassword
 
     createOffer:
       type: object

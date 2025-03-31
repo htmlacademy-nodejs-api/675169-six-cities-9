@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware, PrivateRouteMiddleware, AuthorisationMiddleware } from '../../libs/rest/index.js';
+import { BaseController, DocumentExistsMiddleware, UniqueEmailMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, UploadFileMiddleware, AuthorisationMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { ChangeFavoriteRequest, CreateUserDto, CreateUserRequest, LoginUserRequest, ParamUserId} from './index.js';
@@ -11,6 +11,7 @@ import { UserRdo } from './rdo/user.rdo.js';
 import { OfferRdo, OfferService } from '../offer/index.js';
 import { AuthService } from '../auth/index.js';
 import { LoggedUserRdo } from './rdo/logged-user.rdo.js';
+import { UploadUserAvatarRdo } from './rdo/upload-user-avatar.rdo.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -20,14 +21,10 @@ export class UserController extends BaseController {
     @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.Config) private readonly configService: Config<RestSchema>,
     @inject(Component.AuthService) private readonly authService: AuthService,
+    @inject(Component.Config) private readonly config: Config<RestSchema>,
   ) {
     super(logger);
     this.logger.info('Register routes for UserController…');
-
-    const userMiddlewares = [
-      new PrivateRouteMiddleware(),
-      new AuthorisationMiddleware(this.userService),
-    ];
 
     const routes = [
       {
@@ -48,29 +45,35 @@ export class UserController extends BaseController {
         ]
       },
       {
-        path: '/login',
+        path: '/profile',
         method: HttpMethod.Get,
-        handler: this.checkAuthenticate,
-        middlewares: userMiddlewares
+        handler: this.profile,
+        middlewares: [
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
+        ]
       },
       {
         path: '/logout',
         method: HttpMethod.Post,
         handler: this.logout,
-        middlewares: userMiddlewares
+        middlewares: [
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
+        ]
       },
       {
         path: '/favorites',
         method: HttpMethod.Get,
         handler: this.indexFavorites,
-        middlewares: userMiddlewares
+        middlewares: [
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
+        ]
       },
       {
-        path: '/favorites/offers/:offerId',
+        path: '/favorites/:offerId',
         method: HttpMethod.Put,
         handler: this.update,
         middlewares: [
-          ...userMiddlewares,
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           new ValidateObjectIdMiddleware('offerId'),
           new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
         ]
@@ -80,7 +83,7 @@ export class UserController extends BaseController {
         method: HttpMethod.Post,
         handler: this.uploadAvatar,
         middlewares: [
-          ...userMiddlewares,
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           new UploadFileMiddleware(this.configService.get('UPLOAD_DIRECTORY'), 'avatar'),
         ]
       }
@@ -90,7 +93,7 @@ export class UserController extends BaseController {
   }
 
   public async update({ params, tokenPayload }: ChangeFavoriteRequest, res: Response): Promise<void> {
-    const updatedUser = await this.userService.addToOrRemoveFromFavoritesById(tokenPayload.id, params.offerId);
+    const updatedUser = await this.userService.addOrRemoveFromFavoritesById(tokenPayload.id, params.offerId);
     const responseData = fillDTO(UserRdo, updatedUser);
     this.ok(res, responseData);
   }
@@ -109,16 +112,13 @@ export class UserController extends BaseController {
 
     const user = await this.authService.verify(body);
     const token = await this.authService.authenticate(user);
-    const responseData = fillDTO(LoggedUserRdo, {
-      email: user.email,
-      token,
-    });
-    this.ok(res, responseData);
+
+    const responseData = fillDTO(LoggedUserRdo, user);
+    this.ok(res, Object.assign(responseData, { token }));
   }
 
 
   public async logout(_req: LoginUserRequest, res: Response): Promise<void> {
-    // TODO: Выход из авторизированного режима
     this.okNoContent(res);
   }
 
@@ -130,16 +130,19 @@ export class UserController extends BaseController {
     this.created(res, fillDTO(UserRdo, result));
   }
 
-  public async uploadAvatar(req: Request, res: Response) {
-    this.created(res, {
-      filepath: req.file?.path
-    });
+  public async uploadAvatar({ file, tokenPayload }: Request, res: Response) {
+    console.log('tokenPayload', tokenPayload);
+    const { id } = tokenPayload;
+
+
+    const uploadFile = { image: file?.filename };
+    await this.userService.updateById(id, uploadFile);
+    this.created(res, fillDTO(UploadUserAvatarRdo, { filepath: uploadFile.image }));
   }
 
-  public async checkAuthenticate({ tokenPayload: { email }}: Request, res: Response) {
+  public async profile({ tokenPayload: { email }}: Request, res: Response) {
     const foundedUser = await this.userService.findByEmail(email);
 
-    // TODO: нужно ли токен возвращать, сейчас просто возвращается вся информация о пользователе?
     this.ok(res, fillDTO(LoggedUserRdo, foundedUser));
   }
 }

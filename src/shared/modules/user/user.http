@@ -5,11 +5,10 @@ POST http://localhost:4000/users/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "email": "helloworld@email.com",
+  "email": "helloworld11@email.com",
   "name": "Jack",
   "password": "password",
-  "isPro": false,
-  "image": "image.jpg"
+  "isPro": false
 }
 
 ###
@@ -32,30 +31,31 @@ Content-Type: application/json
 
 GET http://localhost:4000/users/favorites/ HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTA0NjYxOGNhMWFmMjJiN2MxZDg0MiIsImlhdCI6MTc0Mjc1MTMzOSwiZXhwIjoxNzQyOTI0MTM5fQ.pZTi4bzxGoRFsblSi2eMtX0Ex3-BY6vjr-eDXyNfOf4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTkwZGUwMDg4NGMwNjc0NDg0ODZiOCIsImlhdCI6MTc0MzMyNjcwNCwiZXhwIjoxNzQzNDk5NTA0fQ.aZL-ijxVgd5oASso-AuWt08_xrOd30sx2SrwYcm6HOM
 
 ###
 
 # Пользователи
 ## Добавить или Удалить объявление в избранное
 
-PUT http://localhost:4000/users/favorites/offers/67e0463cd4c051196e3e4257 HTTP/1.1
+PUT http://localhost:4000/users/favorites/67e0463cd4c051196e3e4257 HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTA0NjYxOGNhMWFmMjJiN2MxZDg0MiIsImlhdCI6MTc0Mjc1MTMzOSwiZXhwIjoxNzQyOTI0MTM5fQ.pZTi4bzxGoRFsblSi2eMtX0Ex3-BY6vjr-eDXyNfOf4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTkwZGUwMDg4NGMwNjc0NDg0ODZiOCIsImlhdCI6MTc0MzMyNjcwNCwiZXhwIjoxNzQzNDk5NTA0fQ.aZL-ijxVgd5oASso-AuWt08_xrOd30sx2SrwYcm6HOM
 
 ###
 
 
 ## Отправить изображение
 
-POST http://localhost:4000/users/67cc69f382993a06c96149af/avatar HTTP/1.1
+POST http://localhost:4000/users/avatar HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTkwZGUwMDg4NGMwNjc0NDg0ODZiOCIsImlhdCI6MTc0MzMyNjcwNCwiZXhwIjoxNzQzNDk5NTA0fQ.aZL-ijxVgd5oASso-AuWt08_xrOd30sx2SrwYcm6HOM
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="avatar"; filename="test.png"
+Content-Disposition: form-data; name="avatar"; filename="test2.png"
 Content-Type: image/png
 
-< /Users/kirill.k/Desktop/test.png
+< /Users/kirill.k/Desktop/test2.png
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
@@ -64,15 +64,15 @@ Content-Type: image/png
 ###
 
 ## Проверить токен пользователя
-GET http://localhost:4000/users/login HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTA0NjYxOGNhMWFmMjJiN2MxZDg0MiIsImlhdCI6MTc0Mjc1MTMzOSwiZXhwIjoxNzQyOTI0MTM5fQ.pZTi4bzxGoRFsblSi2eMtX0Ex3-BY6vjr-eDXyNfOf4
+GET http://localhost:4000/users/profile HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTkwZGUwMDg4NGMwNjc0NDg0ODZiOCIsImlhdCI6MTc0MzMyNjcwNCwiZXhwIjoxNzQzNDk5NTA0fQ.aZL-ijxVgd5oASso-AuWt08_xrOd30sx2SrwYcm6HOM
 
 ###
 
 ## Logout
 POST http://localhost:4000/users/logout HTTP/1.1
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTA0NjYxOGNhMWFmMjJiN2MxZDg0MiIsImlhdCI6MTc0Mjc1MTMzOSwiZXhwIjoxNzQyOTI0MTM5fQ.pZTi4bzxGoRFsblSi2eMtX0Ex3-BY6vjr-eDXyNfOf4
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6ImhlbGxvd29ybGRAZW1haWwuY29tIiwibmFtZSI6IkphY2siLCJpZCI6IjY3ZTkwZGUwMDg4NGMwNjc0NDg0ODZiOCIsImlhdCI6MTc0MzMyNjcwNCwiZXhwIjoxNzQzNDk5NTA0fQ.aZL-ijxVgd5oASso-AuWt08_xrOd30sx2SrwYcm6HOM
 
 
 ###

@@ -1,9 +1,9 @@
 import { defaultClasses, getModelForClass, prop, modelOptions, Ref } from '@typegoose/typegoose';
-import { CityEnum } from '../../enums/city.enum.js';
+import { CityEnum } from '../../enums/index.js';
 import { ComfortsEnum, HousingEnum } from '../../enums/index.js';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, guestsNumberValidation, rentPriceValidation, roomsNumberValidation, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../constants/index.js';
-import { UserEntity } from '../user/user.entity.js';
-import { Coordinate } from '../../types/coordinate.type.js';
+import { UserEntity } from '../user/index.js';
+import { Coordinate } from '../../types/index.js';
 
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging

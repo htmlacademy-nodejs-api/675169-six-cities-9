@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { AuthorisationMiddleware, AuthorMiddleware, BaseController, DocumentExistsMiddleware, HttpMethod, PrivateRouteMiddleware, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
+import { AuthorisationMiddleware, AuthorMiddleware, BaseController, DocumentExistsMiddleware, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { Component } from '../../enums/index.js';
 import { CommentService } from './comment-service.interface.js';
@@ -9,6 +9,7 @@ import { fillDTO } from '../../helpers/index.js';
 import { CreateCommentRequest } from './create-comment-request.type.js';
 import { OfferService, ParamOfferId } from '../offer/index.js';
 import { CreateCommentDto } from './dto/create-comment.dto.js';
+import { Config, RestSchema } from '../../libs/config/index.js';
 import { UserService } from '../user/index.js';
 
 @injectable()
@@ -17,16 +18,13 @@ export class CommentController extends BaseController {
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
     @inject(Component.OfferService) private readonly offerService: OfferService,
+
     @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.Config) private readonly config: Config<RestSchema>,
   ) {
     super(logger);
 
     this.logger.info('Register routes for CommentController..');
-
-    const userMiddlewares = [
-      new PrivateRouteMiddleware(),
-      new AuthorisationMiddleware(this.userService),
-    ];
 
     const offerMiddlewares = [
       new ValidateObjectIdMiddleware('offerId'),
@@ -45,7 +43,7 @@ export class CommentController extends BaseController {
         method: HttpMethod.Post,
         handler: this.create,
         middlewares: [
-          ...userMiddlewares,
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           ...offerMiddlewares,
           new ValidateDtoMiddleware(CreateCommentDto)
         ]
@@ -55,7 +53,7 @@ export class CommentController extends BaseController {
         method: HttpMethod.Delete,
         handler: this.delete,
         middlewares: [
-          ...userMiddlewares,
+          new AuthorisationMiddleware(this.config.get('JWT_SECRET'), this.userService),
           new AuthorMiddleware(this.offerService, 'Offer', 'offerId'),
           ...offerMiddlewares
         ]

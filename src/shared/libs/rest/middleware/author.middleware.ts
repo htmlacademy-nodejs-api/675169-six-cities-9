@@ -31,4 +31,3 @@ export class AuthorMiddleware implements Middleware {
   }
 }
 
-// ${this.entityName} with ${documentId} not found.

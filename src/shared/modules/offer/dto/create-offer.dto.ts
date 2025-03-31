@@ -2,7 +2,7 @@ import { CityEnum, ComfortsEnum, HousingEnum } from '../../../enums/index.js';
 import { IsArray, IsBoolean, IsEnum, IsInt, Max, MaxLength, Min, MinLength, IsString, Matches, ArrayMinSize, ArrayMaxSize, ValidateNested } from 'class-validator';
 import { DESCRIPTION_MAX_LENGTH, DESCRIPTION_MIN_LENGTH, GUESTS_NUMBER_MAX, GUESTS_NUMBER_MIN, IMAGES_LENGTH, RENT_PRICE_MAX, RENT_PRICE_MIN, ROOMS_NUMBER_MAX, ROOMS_NUMBER_MIN, TITLE_MAX_LENGTH, TITLE_MIN_LENGTH } from '../../../constants/index.js';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
-import { Coordinate } from '../../../types/coordinate.type.js';
+import { Coordinate } from '../../../types/index.js';
 import { Type } from 'class-transformer';
 import { CoordinatesDto } from '../index.js';
 
@@ -36,7 +36,7 @@ export class CreateOfferDto {
   @IsBoolean({ message: CreateOfferValidationMessage.premium.invalid })
     premium: boolean;
 
-  @IsEnum(HousingEnum, { message: CreateOfferValidationMessage.city.invalid })
+  @IsEnum(HousingEnum, { message: CreateOfferValidationMessage.housingType.invalid })
     housingType: HousingEnum;
 
   @IsInt({ message: CreateOfferValidationMessage.roomsNumber.invalidFormat })
@@ -64,6 +64,5 @@ export class CreateOfferDto {
   @Type(() => CoordinatesDto)
     coordinates: Coordinate;
 
-  // @IsMongoId({ message: CreateOfferValidationMessage.userId.invalidId })
   userId: string;
 }

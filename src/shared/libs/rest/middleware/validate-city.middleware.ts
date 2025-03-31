@@ -17,7 +17,7 @@ export class ValidateCityMiddleware implements Middleware {
 
     throw new HttpError(
       StatusCodes.BAD_REQUEST,
-      `${city} is not included to valid сities`,
+      `${city} is not included to valid cities`,
       'ValidateCityMiddleware'
     );
   }

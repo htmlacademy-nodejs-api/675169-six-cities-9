@@ -1,5 +1,7 @@
-import { DECIMAL_PLACES_ZERO, PASSWORD_MAX_NUMBER, PASSWORD_MIN_NUMBER } from '../constants/index.js';
+import { DECIMAL_PLACES_ZERO } from '../constants/index.js';
 import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { ApplicationError, ValidationErrorField } from '../libs/rest/index.js';
+import { ValidationError } from 'class-validator';
 
 export function generateRandomValue(min:number, max: number, numAfterDigit = DECIMAL_PLACES_ZERO) {
   return Number(((Math.random() * (max - min)) + min).toFixed(numAfterDigit));
@@ -19,19 +21,6 @@ export function getRandomBoolean(): boolean {
   return Math.random() < 0.5;
 }
 
-export function getRandomPassword(): string {
-  const randomPasswordLength = generateRandomValue(PASSWORD_MIN_NUMBER,PASSWORD_MAX_NUMBER);
-
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-  let password = '';
-
-  for (let i = 0; i < randomPasswordLength; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-
-  return password;
-}
-
 export function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'UNKNOWN ERROR';
 }
@@ -40,8 +29,18 @@ export function fillDTO<T, V>(someDto: ClassConstructor<T>, plainObject: V) {
   return plainToInstance(someDto, plainObject, { excludeExtraneousValues: true });
 }
 
-export function createErrorObject(message: string) {
-  return {
-    error: message,
-  };
+export function createErrorObject(errorType: ApplicationError, error: string, details: ValidationErrorField[] = []) {
+  return { errorType, error, details };
+}
+
+export function reduceValidationErrors(errors: ValidationError[]): ValidationErrorField[] {
+  return errors.map(({ property, value, constraints}) => ({
+    property,
+    value,
+    messages: constraints ? Object.values(constraints) : []
+  }));
+}
+
+export function getFullServerPath(host: string, port: number) {
+  return `http://${host}:${port}`;
 }

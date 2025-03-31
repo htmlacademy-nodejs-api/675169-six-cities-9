@@ -31,7 +31,7 @@ export class DefaultOfferService implements OfferService {
     return populatedOffer.userId._id.toString() === userId;
   }
 
-  private getAgregateArray(userId: string | null) {
+  private getAggregatedArray(userId: string | null) {
     const favAggregateArray = userId ? [
       {
         $lookup: {
@@ -97,13 +97,13 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async find(userId: string | null, limit = MAX_ITEMS_PER_PAGE): Promise<DocumentType<FullOffer>[]> {
-    const aggregateArray = this.getAgregateArray(userId);
+    const aggregateArray = this.getAggregatedArray(userId);
     return await this.offerModel.aggregate(aggregateArray).limit(limit).exec();
   }
 
   public async findAllByIds(userId: string | null, offerIds: string[]): Promise<DocumentType<FullOffer>[]> {
     const objectIds = offerIds.map((offerId) => new mongoose.Types.ObjectId(offerId));
-    const aggregateArray = this.getAgregateArray(userId);
+    const aggregateArray = this.getAggregatedArray(userId);
 
     return await this.offerModel.aggregate([
       { $match: { _id: { $in: objectIds } } },
@@ -112,7 +112,7 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async findById(userId: string | null, offerId: string): Promise<DocumentType<FullOffer> | null> {
-    const aggregateArray = this.getAgregateArray(userId);
+    const aggregateArray = this.getAggregatedArray(userId);
 
     return await this.offerModel.aggregate([
       { $match: { _id: new Types.ObjectId(offerId) } },
@@ -122,7 +122,7 @@ export class DefaultOfferService implements OfferService {
 
   public async updateById(offerId: string, dto: EditOfferDto): Promise<DocumentType<OfferEntity> | null> {
     const result = await this.offerModel.findByIdAndUpdate(offerId, dto, {new: true}).exec();
-    this.logger.info(`The offer was updateded: ${dto.title}`);
+    this.logger.info(`The offer was updated: ${dto.title}`);
 
     return result;
   }
@@ -134,7 +134,7 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async findPremiumByCity(userId: string | null, city: string): Promise<DocumentType<FullOffer>[]> {
-    const aggregateArray = this.getAgregateArray(userId);
+    const aggregateArray = this.getAggregatedArray(userId);
 
     return this.offerModel.aggregate([
       { $match: { city, premium: true } },

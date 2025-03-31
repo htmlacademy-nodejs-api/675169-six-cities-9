@@ -28,11 +28,11 @@ npm install
 ### CLI
 Для запуска приложения в CLI режиме доступны сценарии
 
-`npm run cli:version` – Выводит версию CLI-приложения.
-`npm run cli:help` – Показывает справочную информацию о доступных командах.
-`npm run cli:import` – Импортирует данные из файла **./mocks/mocks.tsv**.
-`npm run cli:generate` – Генерирует 50 записей и сохраняет их в **./mocks/new-mocks.tsv**, используя API **http://localhost:3123/api**.
-`npm run mock:server` – Запускает json-server с данными из **./mocks/mock-server-data.json** на **http://localhost:3123**.
+`npm run cli:version` – Выводит версию CLI-приложения.  
+`npm run cli:help` – Показывает справочную информацию о доступных командах.  
+`npm run cli:import` – Импортирует данные из файла **./mocks/mocks.tsv**.  
+`npm run cli:generate` – Генерирует 50 записей и сохраняет их в **./mocks/new-mocks.tsv**, используя API **http://localhost:3123/api**.  
+`npm run mock:server` – Запускает json-server с данными из **./mocks/mock-server-data.json** на **http://localhost:3123**.  
 
 
 #### Скомпилировать проект

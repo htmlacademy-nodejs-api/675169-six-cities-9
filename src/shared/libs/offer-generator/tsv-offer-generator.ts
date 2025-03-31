@@ -28,7 +28,7 @@ export class TSVOfferGenerator implements OfferGenerator {
 
     const author = [authorName, authorEmail,authorAvatar,authorStatus ].join(SEMICOLON);
 
-    const result = [
+    return [
       title,
       description,
       city,
@@ -44,7 +44,5 @@ export class TSVOfferGenerator implements OfferGenerator {
       coordinate,
       author
     ].join(TAB_SPACE);
-
-    return result;
   }
 }

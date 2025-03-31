@@ -1,12 +1,12 @@
 export class HttpError extends Error {
   public httpStatusCode!: number;
-  public details?: string;
+  public detail?: string;
 
-  constructor(httpStatusCode: number, message: string, details?: string) {
+  constructor(httpStatusCode: number, message: string, detail?: string) {
     super(message);
 
     this.httpStatusCode = httpStatusCode;
     this.message = message;
-    this.details = details;
+    this.detail = detail;
   }
 }
