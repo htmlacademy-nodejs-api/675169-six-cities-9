@@ -7,7 +7,7 @@ import { createReadStream } from 'node:fs';
 import { Offer } from '../../types/index.js';
 
 export class TSVFileReader extends EventEmitter implements FileReader {
-  private CHUNK_SIZE = 16384; // 16KB
+  private CHUNK_SIZE = 16384;
 
   constructor(
     private readonly filename: string
