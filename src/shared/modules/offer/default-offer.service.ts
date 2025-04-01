@@ -38,7 +38,7 @@ export class DefaultOfferService implements OfferService {
           from: 'users',
           let: { userId: new mongoose.Types.ObjectId(userId) },
           pipeline: [
-            { $match: { $expr: { $eq: ['$_id', '$$userId'] } } }, // Находим пользователя по _id
+            { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
             { $project: { _id: 0, favoriteOfferIds: 1 } }
           ],
           as: 'userData'
@@ -49,12 +49,12 @@ export class DefaultOfferService implements OfferService {
           isFavorite: {
             $in: [
               { $toString: '$_id' },
-              { $ifNull: [{ $arrayElemAt: ['$userData.favoriteOfferIds', 0] }, []] } // Берем favoriteOfferIds (или пустой массив, если данных нет)
+              { $ifNull: [{ $arrayElemAt: ['$userData.favoriteOfferIds', 0] }, []] }
             ]
           }
         }
       },
-      { $unset: 'userData' } // Убираем временные данные пользователя
+      { $unset: 'userData' }
     ] : [
       {
         $addFields: { isFavorite: false }
@@ -79,10 +79,7 @@ export class DefaultOfferService implements OfferService {
       },
       },
       { $unset: 'comments' },
-
-      // добавляем isFavorite
       ...favAggregateArray,
-
       { $sort: { createdAt: SortType.Down } }
     ];
 
